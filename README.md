@@ -15,11 +15,11 @@ cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DSCENE_EDITOR_FETCH_DEPS=
 cmake --build build --config Release --target scene_editor --parallel 4
 ```
 
-Run `build/Release/scene_editor.exe` with Visual Studio generators or `build/scene_editor.exe` with single-configuration generators. Build from CLion by opening this directory as a CMake project, selecting a Visual Studio or MinGW toolchain, reloading CMake, then running the `scene_editor` target. CLion's bundled CMake can be used if `cmake` is not on `PATH`. The first configure downloads dependencies; if your network requires an HTTP proxy, configure Git's proxy before reloading CMake. See `DEPENDENCIES.md` for versions and provenance.
+Run `build/Release/scene_editor.exe` with Visual Studio generators or `build/scene_editor.exe` with single-configuration generators. Build from CLion by opening this directory as a CMake project, selecting a Visual Studio or MinGW toolchain, reloading CMake, then running the `scene_editor` target. CLion's bundled CMake can be used if `cmake` is not on `PATH`. The first configure downloads dependencies; if your network requires an HTTP proxy, configure Git's proxy before reloading CMake. Run `ctest --test-dir build -C Release --output-on-failure` after building the test targets.
 
 For the existing Visual Studio build in this repository, double-click `run-editor.cmd` in the project root. It starts the built editor from the correct directory and keeps startup error output visible. The DeepSeek key belongs in the ignored `.env` file; see `docs/agent-setup.md`.
 
-The editor starts with a ground plane, cube, point light, and directional light. The top toolbar adds a cube, sphere, or plane and immediately selects it; it can also import an OBJ, add the example model, or reset the camera. The left panel lists objects and toggles visibility. The center is the 3D viewport. The right panel has Properties and Lighting tabs. Click the viewport, hold the right mouse button to look around, use W/A/S/D to move, and Q/E to move vertically. Changes appear immediately in the viewport; status and import errors appear at the bottom. The graphics acceptance steps are in `docs/graphics-acceptance.md`.
+The editor starts with a ground plane, cube, point light, and directional light. The top toolbar adds a cube, sphere, or plane and immediately selects it; it can also import an OBJ, add the example model, or reset the camera. The left panel lists objects and toggles visibility. The center is the 3D viewport. The right panel has Properties, Lighting, and Agent tabs. Click the viewport, hold the right mouse button to look around, use W/A/S/D to move, and Q/E to move vertically. Changes appear immediately in the viewport; status and import errors appear at the bottom. The graphics acceptance steps are in `docs/graphics-acceptance.md`.
 
 ### 界面快速上手
 
@@ -32,3 +32,26 @@ The editor starts with a ground plane, cube, point light, and directional light.
 7. 打开右侧“Agent”页，可用自然语言生成多步场景修改；模型配置和无需密钥的 JSON 计划验收见 `docs/agent-setup.md`。
 
 The direct graphics editor remains the primary deliverable. Agent features call the same validated scene operations and are optional for direct rendering and editing.
+
+## Course demonstration
+
+1. Launch the editor and use **场景文件 → 打开** to load `assets/examples/course-demo/course-demo.json`. The scene has three primitive trees, a street lamp with warm point light, a cool directional light, and a textured OBJ crate. Its matching `course-demo.resources/` folder contains copied OBJ, MTL, and PNG files. The original fixture and CC0 permission are in the same directory. A rendered preview is in `docs/course-demo-preview.png`.
+2. Select the crate and adjust position/scale or material. Add a cube, sphere, and plane with the toolbar; use the camera and lighting panel to show direct editing.
+3. Save to a chosen folder, move the JSON and sibling `.resources` directory together, then reopen. See `docs/scene-format.md` for the file contract.
+4. Fill the ignored `.env` with a DeepSeek key and try the Agent request in `docs/agent-setup.md`. Direct editing works without the key.
+
+![OpenGL course demo scene](docs/course-demo-preview.png)
+
+## Supported scope and limits
+
+- Windows 10/11 with an OpenGL 3.3 Core GPU driver. Verified development machine and 100-object result are recorded in `docs/performance-results.md`.
+- Cubes, spheres, planes, and static OBJ geometry with normals, UV coordinates, referenced MTL material, and one `map_Kd` diffuse texture per material. Animation, PBR materials, unsupported MTL texture directives, and arbitrary mesh formats are outside the course baseline.
+- Blinn-Phong ambient/diffuse/specular lighting, up to four point lights and two directional lights. The baseline does not include shadow maps, skyboxes, or particles.
+- Versioned JSON scene plus sibling resource directory; a missing or invalid dependency rejects the load before replacing the current scene. See `docs/scene-format.md`.
+- The optional Agent uses DeepSeek for structured scene plans. It executes only allowlisted operations; network or key errors do not prevent direct OpenGL editing. Conversation history is session-only.
+
+## Dependency licenses and evidence
+
+GLFW (zlib/libpng), GLAD (MIT), GLM (MIT), Assimp (BSD-3-Clause), Dear ImGui (MIT), nlohmann/json (MIT), and stb_image (MIT or public domain) are fetched at pinned versions; see `DEPENDENCIES.md` for the versions and upstream sources. OpenGL is supplied by the GPU driver. The original demo art is CC0; see `assets/examples/course-demo/LICENSE.md`.
+
+The executed quickstart scenarios and their limits are recorded in `docs/acceptance-results.md`; optional extension scope is in `docs/optional-scope.md`.

@@ -113,11 +113,11 @@ description: "Dependency-ordered tasks for the OpenGL scene editor feature"
 
 **Purpose**: Verify the course baseline and prepare a reproducible demonstration.
 
-- [ ] T043 [P] Add a representative example scene and licensed OBJ/MTL/texture fixture in `assets/examples/course-demo/`
-- [ ] T044 Document supported hardware, build instructions, scene limitations, dependency licenses, and demo workflow in `README.md`
-- [ ] T045 Profile the 100-object scene for 60 seconds and record median frame rate, resolution, GPU, and driver in `docs/performance-results.md`
-- [ ] T046 Run all scenarios in `specs/001-agent-3d-scene/quickstart.md` and record outcomes in `docs/acceptance-results.md`
-- [ ] T047 Select at most one or two optional extensions only after baseline acceptance, and record the choice in `docs/optional-scope.md`
+- [X] T043 [P] Add a representative example scene and licensed OBJ/MTL/texture fixture in `assets/examples/course-demo/`
+- [X] T044 Document supported hardware, build instructions, scene limitations, dependency licenses, and demo workflow in `README.md`
+- [X] T045 Profile the 100-object scene for 60 seconds and record median frame rate, resolution, GPU, and driver in `docs/performance-results.md`
+- [X] T046 Run all scenarios in `specs/001-agent-3d-scene/quickstart.md` and record outcomes in `docs/acceptance-results.md`
+- [X] T047 Select at most one or two optional extensions only after baseline acceptance, and record the choice in `docs/optional-scope.md`
 
 ## Dependencies & Execution Order
 

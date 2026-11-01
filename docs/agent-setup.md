@@ -24,6 +24,8 @@ $env:DEEPSEEK_LIVE_TEST = '1'
 Remove-Item Env:DEEPSEEK_LIVE_TEST
 ```
 
+如需运行课程 quickstart 的三棵树、路灯、定向改色和缺失对象检查，可在调用测试程序前再设置 `$env:DEEPSEEK_LIVE_SCENARIO = '1'`，完成后移除该变量。此模式会发起多次真实模型请求，并仅在测试进程的内存场景中执行返回的操作。
+
 ## 离线验收
 
 即使没有配置模型，也可以在 Agent 输入框粘贴 JSON 计划并点击 **生成并执行**。例如：

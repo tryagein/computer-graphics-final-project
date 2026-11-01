@@ -37,6 +37,14 @@ endif()
 
 include(CTest)
 if(BUILD_TESTING)
+  add_executable(generate_course_demo
+    tools/GenerateCourseDemo.cpp
+    src/scene/Scene.cpp src/scene/Transform.cpp src/scene/Camera.cpp
+    src/persistence/SceneSerializer.cpp src/persistence/SceneValidator.cpp
+    src/persistence/ResourcePackager.cpp src/persistence/SceneFileService.cpp)
+  target_include_directories(generate_course_demo PRIVATE src)
+  target_compile_definitions(generate_course_demo PRIVATE SCENE_EDITOR_ASSET_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets")
+  target_link_libraries(generate_course_demo PRIVATE glm::glm nlohmann_json::nlohmann_json)
   add_executable(scene_persistence_tests
     tests/PersistenceTests.cpp
     src/scene/Scene.cpp src/scene/Transform.cpp src/scene/Camera.cpp
@@ -61,6 +69,7 @@ if(BUILD_TESTING)
     src/agent/PlanExecutor.cpp src/agent/ConversationContext.cpp)
   target_include_directories(scene_agent_tests PRIVATE src)
   target_compile_definitions(scene_agent_tests PRIVATE SCENE_EDITOR_PROJECT_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+  target_compile_definitions(scene_agent_tests PRIVATE SCENE_EDITOR_ASSET_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets")
   target_link_libraries(scene_agent_tests PRIVATE glad glm::glm nlohmann_json::nlohmann_json assimp)
   if(WIN32)
     target_link_libraries(scene_agent_tests PRIVATE winhttp)

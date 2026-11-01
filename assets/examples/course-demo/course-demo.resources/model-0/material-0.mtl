@@ -1,0 +1,6 @@
+newmtl DemoChecker
+Ka 0.18 0.18 0.18
+Kd 1 1 1
+Ks 0.45 0.45 0.45
+Ns 56
+map_Kd texture-0.png

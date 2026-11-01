@@ -186,8 +186,13 @@ ProviderConfig ProviderConfig::fromEnvironment() {
 
 ProviderPlan parseDeepSeekPlanResponse(const nlohmann::json& response) {
     try {
-        if (response.at("status") != "completed")
-            return {Result::failure("Model response was incomplete."), {}};
+        if (response.at("status") != "completed") {
+            std::string reason;
+            if (response.contains("incomplete_details") && response.at("incomplete_details").is_object())
+                reason = response.at("incomplete_details").value("reason", "");
+            return {Result::failure("Model response was incomplete" +
+                                    (reason.empty() ? std::string(".") : ": " + reason)), {}};
+        }
         std::string text;
         for (const auto& item : response.at("output")) {
             if (item.value("type", "") != "message") continue;
@@ -229,7 +234,7 @@ ProviderPlan DeepSeekProvider::plan(const std::string& request,
         {"model", config_.model}, {"instructions", instructions},
         {"input", "Recent conversation:\n" + history + "\nCurrent scene state:\n" +
                   snapshot + "\nLatest user request:\n" + request},
-        {"max_output_tokens", 4096},
+        {"reasoning", {{"effort", "none"}}}, {"max_output_tokens", 8192},
         {"text", {{"format", {{"type", "json_schema"}, {"name", "scene_plan"},
             {"strict", true}, {"schema", planSchema()}}}}}
     };
