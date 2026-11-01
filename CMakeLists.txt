@@ -15,13 +15,17 @@ add_executable(scene_editor
   src/assets/ObjImporter.cpp src/assets/AssetService.cpp
   src/persistence/SceneSerializer.cpp src/persistence/SceneValidator.cpp
   src/persistence/ResourcePackager.cpp src/persistence/SceneFileService.cpp
+  src/agent/OperationCodec.cpp src/agent/SceneStateQuery.cpp
+  src/agent/SceneOperationDispatcher.cpp src/agent/AgentProvider.cpp
+  src/agent/PlanExecutor.cpp src/agent/ConversationContext.cpp
   src/ui/EditorApp.cpp src/ui/CameraControls.cpp src/ui/SceneObjectPanel.cpp
-  src/ui/MaterialPanel.cpp src/ui/LightPanel.cpp src/ui/Notifications.cpp src/ui/SceneFilePanel.cpp)
+  src/ui/MaterialPanel.cpp src/ui/LightPanel.cpp src/ui/Notifications.cpp
+  src/ui/SceneFilePanel.cpp src/ui/AgentPanel.cpp)
 target_include_directories(scene_editor PRIVATE src)
 target_include_directories(scene_editor PRIVATE ${stb_SOURCE_DIR})
 target_link_libraries(scene_editor PRIVATE glfw glad glm::glm assimp imgui nlohmann_json::nlohmann_json)
 if(WIN32)
-  target_link_libraries(scene_editor PRIVATE ole32 shell32 uuid)
+  target_link_libraries(scene_editor PRIVATE ole32 shell32 uuid winhttp)
 endif()
 target_compile_definitions(scene_editor PRIVATE SCENE_EDITOR_ASSET_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets")
 if(MSVC)
@@ -45,4 +49,24 @@ if(BUILD_TESTING)
     target_compile_options(scene_persistence_tests PRIVATE -Wall -Wextra -Wpedantic)
   endif()
   add_test(NAME scene_persistence COMMAND scene_persistence_tests)
+  add_executable(scene_agent_tests
+    tests/AgentTests.cpp
+    src/scene/Scene.cpp src/scene/Transform.cpp src/scene/Camera.cpp
+    src/assets/ObjImporter.cpp src/assets/AssetService.cpp
+    src/persistence/SceneSerializer.cpp src/persistence/SceneValidator.cpp
+    src/persistence/ResourcePackager.cpp src/persistence/SceneFileService.cpp
+    src/agent/OperationCodec.cpp src/agent/SceneStateQuery.cpp
+    src/agent/SceneOperationDispatcher.cpp src/agent/AgentProvider.cpp
+    src/agent/PlanExecutor.cpp src/agent/ConversationContext.cpp)
+  target_include_directories(scene_agent_tests PRIVATE src)
+  target_link_libraries(scene_agent_tests PRIVATE glad glm::glm nlohmann_json::nlohmann_json assimp)
+  if(WIN32)
+    target_link_libraries(scene_agent_tests PRIVATE winhttp)
+  endif()
+  if(MSVC)
+    target_compile_options(scene_agent_tests PRIVATE /W4 /permissive- /utf-8)
+  else()
+    target_compile_options(scene_agent_tests PRIVATE -Wall -Wextra -Wpedantic)
+  endif()
+  add_test(NAME scene_agent COMMAND scene_agent_tests)
 endif()

@@ -95,15 +95,15 @@ description: "Dependency-ordered tasks for the OpenGL scene editor feature"
 
 ### Implementation
 
-- [ ] T034 [P] [US3] Implement JSON request/result envelope validation from `contracts/scene-operations.schema.json` in `src/agent/OperationCodec.cpp`
-- [ ] T035 [US3] Implement allowlisted operation dispatch for object, material, light, camera, state, render, save, and load actions in `src/agent/SceneOperationDispatcher.cpp`
-- [ ] T036 [US3] Implement compact scene-state queries and stable-ID/name resolution in `src/agent/SceneStateQuery.cpp`
-- [ ] T037 [P] [US3] Define provider adapter interface and configuration boundary in `src/agent/AgentProvider.hpp`
-- [ ] T038 [US3] Implement selected provider request/response integration and bounded input/error handling in `src/agent/AgentProvider.cpp`
-- [ ] T039 [US3] Implement multi-step plan execution with per-operation feedback and stop-on-unresolved-target behavior in `src/agent/PlanExecutor.cpp`
-- [ ] T040 [US3] Keep clearable conversation context in the active editing session and exclude it from scene persistence in `src/agent/ConversationContext.cpp`
-- [ ] T041 [US3] Add Agent chat, operation progress, completion summary, and clear-context controls in `src/ui/AgentPanel.cpp`
-- [ ] T042 [US3] Document provider setup, structured-operation examples, failure behavior, and manual Agent acceptance in `docs/agent-setup.md`
+- [X] T034 [P] [US3] Implement JSON request/result envelope validation from `contracts/scene-operations.schema.json` in `src/agent/OperationCodec.cpp`
+- [X] T035 [US3] Implement allowlisted operation dispatch for object, material, light, camera, state, render, save, and load actions in `src/agent/SceneOperationDispatcher.cpp`
+- [X] T036 [US3] Implement compact scene-state queries and stable-ID/name resolution in `src/agent/SceneStateQuery.cpp`
+- [X] T037 [P] [US3] Define provider adapter interface and configuration boundary in `src/agent/AgentProvider.hpp`
+- [X] T038 [US3] Implement selected provider request/response integration and bounded input/error handling in `src/agent/AgentProvider.cpp`
+- [X] T039 [US3] Implement multi-step plan execution with per-operation feedback and stop-on-unresolved-target behavior in `src/agent/PlanExecutor.cpp`
+- [X] T040 [US3] Keep clearable conversation context in the active editing session and exclude it from scene persistence in `src/agent/ConversationContext.cpp`
+- [X] T041 [US3] Add Agent chat, operation progress, completion summary, and clear-context controls in `src/ui/AgentPanel.cpp`
+- [X] T042 [US3] Document provider setup, structured-operation examples, failure behavior, and manual Agent acceptance in `docs/agent-setup.md`
 
 **Checkpoint**: Supported natural-language requests execute as validated scene operations, return inspectable results, recover from missing references safely, and remain optional to the editor.
 

@@ -86,13 +86,14 @@ void EditorApp::draw(Scene& scene, Renderer& renderer, Camera& camera, GLFWwindo
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+    agent_.update(scene, camera, renderer);
     const ImGuiIO& io = ImGui::GetIO();
     const float w = io.DisplaySize.x;
     const float h = io.DisplaySize.y;
     const float toolbarHeight = 58.0F;
     const float footerHeight = 38.0F;
     const float leftWidth = std::clamp(w * 0.19F, 190.0F, 270.0F);
-    const float rightWidth = std::clamp(w * 0.27F, 280.0F, 370.0F);
+    const float rightWidth = std::clamp(w * 0.30F, 300.0F, 420.0F);
     const float centerWidth = std::max(1.0F, w - leftWidth - rightWidth);
     const float bodyHeight = std::max(1.0F, h - toolbarHeight - footerHeight);
 
@@ -137,6 +138,10 @@ void EditorApp::draw(Scene& scene, Renderer& renderer, Camera& camera, GLFWwindo
         }
         if (ImGui::BeginTabItem("灯光")) {
             drawLightPanel(scene);
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Agent")) {
+            agent_.draw(scene, camera);
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();

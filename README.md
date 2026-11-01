@@ -1,6 +1,6 @@
 # OpenGL Scene Editor
 
-Interactive OpenGL scene editor coursework project. See `specs/001-agent-3d-scene/` for the specification and implementation plan. T001–T026 provide the graphics editor foundation; later tasks cover scene persistence and Agent operations.
+Interactive OpenGL scene editor coursework project. See `specs/001-agent-3d-scene/` for the specification and implementation plan. The graphics editor, scene persistence, and Agent scene-operation workflow are implemented.
 
 ## Requirements
 
@@ -27,5 +27,6 @@ The editor starts with a ground plane, cube, point light, and directional light.
 4. 在右侧“灯光”中添加、调整、启用或删除点光源与平行光。
 5. 点击视口后，右键拖动观察，W/A/S/D 移动，Q/E 升降；点击“重置相机”返回初始视角。
 6. 点击顶部“场景文件”，选择保存文件夹、填写场景名称，然后保存；打开时使用系统文件选择器。移动场景时，请把生成的场景文件和同名 `.resources` 目录一起移动；格式与验收方法见 `docs/scene-format.md`。
+7. 打开右侧“Agent”页，可用自然语言生成多步场景修改；模型配置和无需密钥的 JSON 计划验收见 `docs/agent-setup.md`。
 
-The direct graphics editor is the primary deliverable. Agent features are layered on the scene-operation contract and are not required for direct rendering and editing.
+The direct graphics editor remains the primary deliverable. Agent features call the same validated scene operations and are optional for direct rendering and editing.
