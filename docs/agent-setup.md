@@ -16,6 +16,14 @@ Agent 是 OpenGL 编辑器右侧的一个辅助页。场景仍由本地 OpenGL �
 
 进入右侧 **Agent** 页，在输入框描述场景，点击 **生成并执行**。界面会显示计划摘要、每一步的执行结果和失败原因。可点击 **清空会话** 删除当前窗口的对话上下文。关闭应用也会丢弃对话上下文。
 
+需要单独验证 API 连通性时，可在 PowerShell 中运行以下命令。它会发起一次真实请求，只校验返回的计划，不修改场景：
+
+```powershell
+$env:DEEPSEEK_LIVE_TEST = '1'
+& '.\build-vs\Debug\scene_agent_tests.exe'
+Remove-Item Env:DEEPSEEK_LIVE_TEST
+```
+
 ## 离线验收
 
 即使没有配置模型，也可以在 Agent 输入框粘贴 JSON 计划并点击 **生成并执行**。例如：

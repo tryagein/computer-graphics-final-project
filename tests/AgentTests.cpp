@@ -5,6 +5,7 @@
 #include "agent/SceneStateQuery.hpp"
 #include "persistence/SceneSerializer.hpp"
 #include <nlohmann/json.hpp>
+#include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 
@@ -14,6 +15,19 @@ using nlohmann::json;
 namespace {
 void require(bool condition, const char* message) {
     if (!condition) throw std::runtime_error(message);
+}
+
+bool liveRequested() {
+#ifdef _WIN32
+    char* value = nullptr;
+    size_t size = 0;
+    _dupenv_s(&value, &size, "DEEPSEEK_LIVE_TEST");
+    const bool enabled = value && *value;
+    std::free(value);
+    return enabled;
+#else
+    return std::getenv("DEEPSEEK_LIVE_TEST") != nullptr;
+#endif
 }
 
 void run() {
@@ -110,6 +124,17 @@ void run() {
             "conversation was persisted with scene");
     require(!DeepSeekProvider({}).plan("Add a cube", context, compactSceneState(scene, camera)).status.ok,
             "unconfigured provider did not fail cleanly");
+    if (liveRequested()) {
+        const auto config = ProviderConfig::fromEnvironment();
+        require(config.ready(), "DeepSeek key is not configured in the project .env");
+        const auto live = DeepSeekProvider(config).plan(
+            "Plan adding one blue cube at [2, 1, 0] and rendering the scene.",
+            context, compactSceneState(scene, camera));
+        if (!live.status.ok) throw std::runtime_error(live.status.message);
+        require(executor.load(live.plan).ok && executor.total() > 0,
+                "DeepSeek returned an unusable or empty scene plan");
+        std::cout << "DeepSeek live plan received: " << executor.total() << " operations\n";
+    }
 }
 }
 
