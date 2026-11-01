@@ -26,6 +26,6 @@ The editor starts with a ground plane, cube, point light, and directional light.
 3. 点击顶部“示例模型”可一键验证 OBJ/MTL 导入；“导入 OBJ”可填写自己的模型路径。
 4. 在右侧“灯光”中添加、调整、启用或删除点光源与平行光。
 5. 点击视口后，右键拖动观察，W/A/S/D 移动，Q/E 升降；点击“重置相机”返回初始视角。
-6. 点击顶部“场景文件”，输入 JSON 路径后保存或打开场景。移动场景时，请把 JSON 文件和同名 `.resources` 目录一起移动；格式与验收方法见 `docs/scene-format.md`。
+6. 点击顶部“场景文件”，选择保存文件夹、填写场景名称，然后保存；打开时使用系统文件选择器。移动场景时，请把生成的场景文件和同名 `.resources` 目录一起移动；格式与验收方法见 `docs/scene-format.md`。
 
 The direct graphics editor is the primary deliverable. Agent features are layered on the scene-operation contract and are not required for direct rendering and editing.

@@ -21,7 +21,7 @@ bool inside(const fs::path& root, const fs::path& path) {
 }
 
 Result resolveResource(const fs::path& root, const std::string& reference, fs::path& resolved) {
-    const fs::path relative(reference);
+    const fs::path relative = fs::u8path(reference);
     if (reference.empty() || relative.is_absolute() || relative.has_root_name() ||
         std::find(relative.begin(), relative.end(), fs::path("..")) != relative.end())
         return Result::failure("Unsafe scene resource path: " + reference);
@@ -42,8 +42,8 @@ Result checkDependency(const fs::path& root, const fs::path& base,
                        const std::string& reference, const std::map<fs::path, SceneResource::Kind>& declared,
                        SceneResource::Kind expected) {
     fs::path resolved;
-    const fs::path relative = (base / fs::path(reference)).lexically_relative(root);
-    auto result = resolveResource(root, relative.generic_string(), resolved);
+    const fs::path relative = (base / fs::u8path(reference)).lexically_relative(root);
+    auto result = resolveResource(root, relative.generic_u8string(), resolved);
     if (!result.ok) return result;
     const auto found = declared.find(resolved);
     if (found == declared.end() || found->second != expected)

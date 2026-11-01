@@ -27,7 +27,7 @@ Move or copy the JSON file and its matching `.resources` directory together. Pat
 
 Vectors have three finite numeric components. Material and light colors are normalized to `[0, 1]`; scale components must be nonzero; light intensity is nonnegative. Object and light IDs are unique. Referenced files must exist inside the saved scene directory, be declared in `resources`, and use safe relative paths. The loader checks OBJ `mtllib` and MTL `map_Kd` dependencies before replacing the current scene. A malformed document, unsupported version, invalid value, missing file, or unsafe path leaves the active scene and camera unchanged.
 
-Saving stages the JSON and assets before replacing an existing save. On an I/O failure, the previous save is restored where possible. Use the top toolbar's **场景文件** button to enter a path, save the active scene, or open a saved one. Errors are shown in the dialog and status bar.
+Saving stages the JSON and assets before replacing an existing save. On an I/O failure, the previous save is restored where possible. Use the top toolbar's **场景文件** button to select a destination folder and enter a scene name. The editor creates `<name>.json` and `<name>.resources/` in that folder. Opening uses the system file picker. Errors are shown in the dialog and status bar.
 
 ## Packaged OBJ/MTL subset
 
@@ -36,7 +36,7 @@ OBJ `mtllib` entries with whitespace-separated filenames are copied and rewritte
 ## Manual acceptance
 
 1. Add a cube and sphere, edit their transforms and materials, add both light types, move the camera, and import an OBJ with MTL and diffuse texture.
-2. Choose **场景文件**, save to `my-scene.json`, and verify the JSON and `my-scene.resources/` directory exist.
+2. Choose **场景文件**, select a folder, enter `my-scene`, and save. Verify `my-scene.json` and `my-scene.resources/` appear in the selected folder.
 3. Move the entire containing directory to another location. Open `my-scene.json` there and compare objects, IDs, transforms, materials, lights, camera view, and imported model appearance.
 4. While the valid scene is open, try opening malformed JSON, then a copy with a missing resource. Confirm both operations report an error and leave the current view and scene intact.
 

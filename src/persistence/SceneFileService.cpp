@@ -54,13 +54,13 @@ Result saveSceneFile(const std::filesystem::path& path, const Scene& scene, cons
         return Result::failure("Cannot save an invalid camera.");
     const fs::path file = fs::absolute(path);
     const fs::path parent = file.parent_path();
-    const std::string resourceName = file.stem().string() + ".resources";
-    const fs::path resources = parent / resourceName;
+    const std::string resourceName = file.stem().u8string() + ".resources";
+    const fs::path resources = parent / fs::u8path(resourceName);
     const auto nonce = std::to_string(std::chrono::steady_clock::now().time_since_epoch().count());
-    const fs::path stagedResources = parent / ("." + resourceName + ".stage-" + nonce);
-    const fs::path stagedFile = parent / ("." + file.filename().string() + ".stage-" + nonce);
-    const fs::path oldResources = parent / ("." + resourceName + ".backup-" + nonce);
-    const fs::path oldFile = parent / ("." + file.filename().string() + ".backup-" + nonce);
+    const fs::path stagedResources = parent / fs::u8path("." + resourceName + ".stage-" + nonce);
+    const fs::path stagedFile = parent / fs::u8path("." + file.filename().u8string() + ".stage-" + nonce);
+    const fs::path oldResources = parent / fs::u8path("." + resourceName + ".backup-" + nonce);
+    const fs::path oldFile = parent / fs::u8path("." + file.filename().u8string() + ".backup-" + nonce);
     bool oldResourcesMoved = false, oldFileMoved = false;
     bool newResourcesMoved = false, newFileMoved = false;
     try {
@@ -82,7 +82,7 @@ Result saveSceneFile(const std::filesystem::path& path, const Scene& scene, cons
         fs::rename(stagedFile, file); newFileMoved = true;
         discard(oldResources);
         discard(oldFile);
-        return {true, "Scene saved: " + file.string()};
+        return {true, "Scene saved: " + file.u8string()};
     } catch (const std::exception& error) {
         if (newFileMoved) discard(file);
         if (newResourcesMoved) discard(resources);
@@ -113,7 +113,7 @@ Result loadSceneFile(const std::filesystem::path& path, Scene& scene, Camera& ca
         if (!validated.ok) return validated;
         scene = std::move(candidate.scene);
         camera = candidate.camera;
-        return {true, "Scene loaded: " + file.string()};
+        return {true, "Scene loaded: " + file.u8string()};
     } catch (const std::exception& error) {
         return Result::failure(std::string("Scene load failed: ") + error.what());
     }

@@ -97,6 +97,19 @@ int main() {
         result = loadSceneFile(movedFile, restored, restoredCamera);
         require(result.ok, result.message.c_str());
 
+        const fs::path unicodeFolder = root / fs::u8path("自选保存位置");
+        fs::create_directories(unicodeFolder);
+        const fs::path unicodeFile = unicodeFolder / fs::u8path("夜晚场景.json");
+        result = saveSceneFile(unicodeFile, scene, camera);
+        require(result.ok, result.message.c_str());
+        require(fs::exists(unicodeFolder / fs::u8path("夜晚场景.resources")),
+                "resource directory was not created beside chosen scene file");
+        Scene unicodeRestored;
+        Camera unicodeCamera;
+        result = loadSceneFile(unicodeFile, unicodeRestored, unicodeCamera);
+        require(result.ok && unicodeRestored.objects.size() == 2,
+                "scene in a selected Unicode folder did not reopen");
+
         const std::string preservedJson = readJson(movedFile).dump();
         restored.find("cube-A")->material.color.x = 2.0F;
         result = saveSceneFile(movedFile, restored, restoredCamera);

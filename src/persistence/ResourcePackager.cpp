@@ -9,7 +9,7 @@ namespace fs = std::filesystem;
 
 std::string addResource(SceneDocument& document, const std::string& directory,
                         const fs::path& relative, SceneResource::Kind kind) {
-    const std::string reference = (fs::path(directory) / relative).generic_string();
+    const std::string reference = (fs::u8path(directory) / relative).generic_u8string();
     document.resources.push_back({reference, kind});
     return reference;
 }
