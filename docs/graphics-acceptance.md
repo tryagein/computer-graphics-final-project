@@ -10,11 +10,11 @@
 ## Manual visual acceptance
 
 1. Launch the editor on a machine supporting OpenGL 3.3 Core. A plane and cube should appear under a directional and a warm point light.
-2. Add a cube, sphere, and plane from the Objects panel. Select each and change position, rotation, and scale. Only the selected object's transform should change.
-3. Hold the right mouse button over the viewport to look around; use W/A/S/D to move relative to the camera and Q/E to move vertically. The view should update on each frame.
-4. Change base color, ambient, diffuse, specular, and shininess in Material. The selected surface should change visibly. Enter a valid texture path and verify the image is mapped using UV coordinates.
-5. Import `assets/examples/pyramid.obj` to verify geometry, generated normals, and the referenced MTL material. Then import an OBJ with UVs and a referenced diffuse texture to verify texture mapping and transform the imported object.
-6. Add a point light and directional light. Change color, intensity, position or direction. Verify distinct visible effects; disable each to verify its contribution disappears.
-7. Inspect the Status panel for frame render time and watch for import/shader errors. Record viewport size, GPU, and driver before comparing performance with SC-005.
+2. Use the top toolbar to add a cube, sphere, and plane. Each should appear in the center viewport and become selected in the left Scene panel. Change position, rotation, and scale in the right Properties tab; only the selected object should change.
+3. Click the viewport, hold the right mouse button to look around, use W/A/S/D to move, and Q/E to move vertically. Press Reset camera on the toolbar to return to the starting view.
+4. Change base color, ambient, diffuse, specular, and shininess in Properties. The selected surface should change visibly. Enter a valid texture path and verify the image is mapped using UV coordinates.
+5. Click Example model on the toolbar to verify OBJ geometry, generated normals, and the referenced MTL material. Use Import OBJ with an OBJ that has UVs and a diffuse texture to verify texture mapping.
+6. Open the right Lighting tab. Add a point light and directional light. Change color, intensity, position or direction. Verify distinct visible effects; disable each to verify its contribution disappears.
+7. Inspect the bottom status bar for frame render time and import errors. Record viewport size, GPU, and driver before comparing performance with SC-005.
 
 This document is an acceptance procedure, not a claim that a human visual check has been completed.

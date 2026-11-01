@@ -17,6 +17,14 @@ cmake --build build --config Release --target scene_editor --parallel 4
 
 Run `build/Release/scene_editor.exe` with Visual Studio generators or `build/scene_editor.exe` with single-configuration generators. Build from CLion by opening this directory as a CMake project, selecting a Visual Studio or MinGW toolchain, reloading CMake, then running the `scene_editor` target. CLion's bundled CMake can be used if `cmake` is not on `PATH`. The first configure downloads dependencies; if your network requires an HTTP proxy, configure Git's proxy before reloading CMake. See `DEPENDENCIES.md` for versions and provenance.
 
-The editor starts with a ground plane, cube, point light, and directional light. Use the Objects, Material, and Lights panels to edit them. The 3D view fills the window behind the panels. Hold the right mouse button over the 3D view to look around; W/A/S/D move, and Q/E move vertically. Import `assets/examples/pyramid.obj` through the Objects panel to try OBJ/MTL loading. The graphics acceptance steps are in `docs/graphics-acceptance.md`.
+The editor starts with a ground plane, cube, point light, and directional light. The top toolbar adds a cube, sphere, or plane and immediately selects it; it can also import an OBJ, add the example model, or reset the camera. The left panel lists objects and toggles visibility. The center is the 3D viewport. The right panel has Properties and Lighting tabs. Click the viewport, hold the right mouse button to look around, use W/A/S/D to move, and Q/E to move vertically. Changes appear immediately in the viewport; status and import errors appear at the bottom. The graphics acceptance steps are in `docs/graphics-acceptance.md`.
+
+### 界面快速上手
+
+1. 点击顶部“立方体”“球体”或“平面”，新对象会出现在 3D 视口中并自动选中。
+2. 在左侧“场景对象”中切换选中对象；右侧“属性”可修改位置、旋转、缩放、颜色和纹理。
+3. 点击顶部“示例模型”可一键验证 OBJ/MTL 导入；“导入 OBJ”可填写自己的模型路径。
+4. 在右侧“灯光”中添加、调整、启用或删除点光源与平行光。
+5. 点击视口后，右键拖动观察，W/A/S/D 移动，Q/E 升降；点击“重置相机”返回初始视角。
 
 The direct graphics editor is the primary deliverable. Agent features are layered on the scene-operation contract and are not required for direct rendering and editing.
