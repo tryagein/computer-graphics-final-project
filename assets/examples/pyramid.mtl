@@ -1,0 +1,5 @@
+newmtl WarmStone
+Ka 0.15 0.12 0.08
+Kd 0.9 0.55 0.25
+Ks 0.4 0.4 0.4
+Ns 48

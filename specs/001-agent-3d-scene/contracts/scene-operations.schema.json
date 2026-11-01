@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "scene-operations.schema.json",
+  "title": "Scene Operation Request",
+  "description": "Allowlisted structured operation envelope exchanged between the Agent and the scene manager.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["operation_id", "tool", "arguments"],
+  "properties": {
+    "operation_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Request-scoped identifier used to correlate operation results."
+    },
+    "tool": {
+      "type": "string",
+      "enum": [
+        "add_object",
+        "update_object",
+        "delete_object",
+        "set_material",
+        "add_light",
+        "update_light",
+        "delete_light",
+        "move_camera",
+        "get_scene_state",
+        "render_scene",
+        "save_scene",
+        "load_scene"
+      ]
+    },
+    "arguments": {
+      "type": "object",
+      "description": "Operation-specific validated arguments; exact per-tool schemas are finalized during implementation."
+    }
+  }
+}

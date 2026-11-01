@@ -1,0 +1,4 @@
+#include "assets/AssetService.hpp"
+#include <atomic>
+#include <filesystem>
+namespace scene_editor {bool addImportedObj(Scene& scene,const std::string& path,std::string& error){error.clear();if(path.empty()){error="Enter an OBJ file path.";return false;}auto asset=importObj(path);if(!asset.valid()){error=asset.error.empty()?"OBJ contains no supported meshes.":asset.error;return false;}static std::atomic<unsigned> next{1};SceneObject object;do{object.id="imported-"+std::to_string(next++);}while(scene.find(object.id));object.name=std::filesystem::path(path).stem().string();object.kind=ObjectKind::ImportedModel;object.geometryPath=path;object.material=asset.submeshes.front().material;if(!scene.add(object)){error="Could not add imported model to scene. Check the model data.";return false;}scene.selectedId=object.id;return true;}}

@@ -1,0 +1,4 @@
+#include "ui/LightPanel.hpp"
+#include <imgui.h>
+#include <atomic>
+namespace scene_editor {void drawLightPanel(Scene& scene){static std::atomic<unsigned> nextId{1};ImGui::Begin("Lights");if(ImGui::Button("Add Point")){Light light;light.id="point-ui-"+std::to_string(nextId++);scene.lights.push_back(light);}ImGui::SameLine();if(ImGui::Button("Add Directional")){Light light;light.id="directional-ui-"+std::to_string(nextId++);light.type=LightType::Directional;scene.lights.push_back(light);}for(auto& light:scene.lights){if(ImGui::TreeNode(light.id.c_str())){ImGui::Checkbox("Enabled",&light.enabled);ImGui::ColorEdit3("Color",&light.color.x);ImGui::DragFloat("Intensity",&light.intensity,0.01F,0.0F,10.0F);if(light.type==LightType::Point)ImGui::DragFloat3("Position",&light.position.x,0.05F);else ImGui::DragFloat3("Direction",&light.direction.x,0.02F);ImGui::TreePop();}}ImGui::End();}}
