@@ -37,8 +37,11 @@ int main() {
     }
     scene.add(primitive("lamp-post", "Street lamp post", ObjectKind::Cube,
                         {2.7F, 1.35F, 0}, {0.12F, 2.7F, 0.12F}, {0.22F, 0.25F, 0.31F}));
-    scene.add(primitive("lamp-head", "Warm street lamp", ObjectKind::Sphere,
-                        {2.7F, 2.8F, 0}, {0.28F, 0.28F, 0.28F}, {1.0F, 0.75F, 0.36F}));
+    auto lampHead = primitive("lamp-head", "Warm street lamp", ObjectKind::Sphere,
+                              {2.7F, 2.8F, 0}, {0.28F, 0.28F, 0.28F}, {1.0F, 0.75F, 0.36F});
+    lampHead.material.emission = {1.0F, 0.72F, 0.4F};
+    lampHead.material.emissionStrength = 1.3F;
+    scene.add(std::move(lampHead));
     SceneObject crate = primitive("textured-crate", "Textured OBJ crate", ObjectKind::ImportedModel,
                                   {0.7F, 0, 2.1F}, {0.9F, 0.9F, 0.9F}, {1, 1, 1});
     crate.geometryPath = (folder / "textured-crate.obj").string();

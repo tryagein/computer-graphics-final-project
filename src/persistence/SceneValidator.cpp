@@ -75,7 +75,8 @@ Result validateSceneDocument(SceneDocument& document, const std::filesystem::pat
         objectIds.insert(object.id);
         const auto& material = object.material;
         if (!normalizedColor(material.color) || !normalizedColor(material.ambient) ||
-            !normalizedColor(material.diffuse) || !normalizedColor(material.specular))
+            !normalizedColor(material.diffuse) || !normalizedColor(material.specular) ||
+            !normalizedColor(material.emission))
             return Result::failure("Material color is outside [0, 1]: " + object.id);
         if (object.kind == ObjectKind::ImportedModel) {
             fs::path path;

@@ -54,7 +54,7 @@ Remove-Item Env:DEEPSEEK_LIVE_TEST
 | --- | --- |
 | `add_object` | `type` 为 `cube`、`sphere`、`plane` 或 `imported_model`；可设置 `id`、`name`、`position`、`rotation`、`scale`，导入 OBJ 时另需本地 `path` |
 | `update_object`、`delete_object` | `object_id`；更新时可设置名称、变换和可见性 |
-| `set_material` | `object_id`；可设置 `color`、`roughness`、`shininess`、其他光照颜色或本地 `texture_path` |
+| `set_material` | `object_id`；可设置 `color`、`roughness`、`shininess`、`emission`、`emission_strength`、其他光照颜色或本地 `texture_path` |
 | `add_light`、`update_light`、`delete_light` | 点光源或平行光；更新和删除使用 `light_id` |
 | `move_camera` | `position`、`target` 或 `yaw`/`pitch`，以及可选投影参数 |
 | `get_scene_state`、`render_scene` | 无参数；渲染在下一帧显示 |
@@ -63,3 +63,5 @@ Remove-Item Env:DEEPSEEK_LIVE_TEST
 要自行选择保存位置，请使用顶部 **场景文件** 的系统文件选择器。Agent 的 `save_scene`/`load_scene` 仅使用启动目录下的 `scenes` 文件夹，以避免模型生成任意写入路径。
 
 计划最多 32 步，逐帧执行。对象目标可以是稳定 ID 或唯一名称。若对象或灯光不存在，执行器会停止后续操作，自动查询场景状态并在进度中显示；更正描述后可重试。无效参数会返回错误，当前操作不会部分修改对象。点光源最多 4 个、平行光最多 2 个；超限会显示错误。网络错误、服务拒绝和无效模型响应会显示在 Agent 页，不影响直接编辑。
+
+路灯要同时创建灯泡物体和同位置的点光源：灯泡材质可设 `"emission":[1,0.72,0.4]`、`"emission_strength":1.5`。自发光让灯泡在暗处可见，点光源照亮周围；透明材质不会产生发光效果。若出现 WinHTTP 12002，界面会指出超时阶段。模型响应最长等待 120 秒；若仍超时，检查网络和 `.env` 中的 `HTTPS_PROXY` 后重试。

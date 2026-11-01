@@ -24,7 +24,8 @@ Result validateSaveSource(const Scene& scene) {
             return Result::failure("Cannot save an invalid or duplicate object: " + object.id);
         const auto& material = object.material;
         if (!normalizedColor(material.color) || !normalizedColor(material.ambient) ||
-            !normalizedColor(material.diffuse) || !normalizedColor(material.specular))
+            !normalizedColor(material.diffuse) || !normalizedColor(material.specular) ||
+            !normalizedColor(material.emission))
             return Result::failure("Cannot save an out-of-range material color: " + object.id);
     }
     for (const auto& light : scene.lights)

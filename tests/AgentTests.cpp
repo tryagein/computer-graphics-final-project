@@ -87,6 +87,16 @@ void run() {
             "valid plan did not complete");
     require(scene.find("agent-cube") && scene.find("agent-cube")->material.color.z == 0.8F,
             "object or material change missing");
+    require(dispatchSceneOperation({"glow", "set_material",
+        {{"object_id", "agent-cube"}, {"emission", {1.0, 0.7, 0.3}},
+         {"emission_strength", 1.5}}}, scene, camera).ok &&
+        scene.find("agent-cube")->material.emissionStrength == 1.5F,
+        "agent could not set an emissive material");
+    const auto previousEmission = scene.find("agent-cube")->material.emissionStrength;
+    require(!dispatchSceneOperation({"bad-glow", "set_material",
+        {{"object_id", "agent-cube"}, {"emission_strength", -1}}}, scene, camera).ok &&
+        scene.find("agent-cube")->material.emissionStrength == previousEmission,
+        "invalid emission changed the material");
     require(scene.lights.size() == 3 && camera.yaw() != -90,
             "light or camera change missing");
 
@@ -149,6 +159,8 @@ void run() {
     require(loadSceneFile(fixture / "course-demo.json", demo, demoCamera).ok &&
             demo.objects.size() == 10 && demo.lights.size() == 2,
             "portable course demo did not load");
+    require(demo.find("lamp-head") && demo.find("lamp-head")->material.emissionStrength > 0,
+            "course demo lamp bulb is not emissive");
     const auto* crate = demo.find("textured-crate");
     require(crate && crate->kind == ObjectKind::ImportedModel &&
             crate->material.texturePath.empty(),

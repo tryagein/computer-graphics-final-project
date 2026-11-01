@@ -91,6 +91,8 @@ nlohmann::json serializeSceneDocument(const SceneDocument& document) {
                 {"ambient", vectorJson(object.material.ambient)},
                 {"diffuse", vectorJson(object.material.diffuse)},
                 {"specular", vectorJson(object.material.specular)},
+                {"emission", vectorJson(object.material.emission)},
+                {"emission_strength", object.material.emissionStrength},
                 {"shininess", object.material.shininess},
                 {"texture_ref", object.material.texturePath}
             }}
@@ -142,6 +144,9 @@ Result deserializeSceneDocument(const nlohmann::json& input, SceneDocument& docu
             object.material.ambient = readVector(material.at("ambient"));
             object.material.diffuse = readVector(material.at("diffuse"));
             object.material.specular = readVector(material.at("specular"));
+            if (material.contains("emission"))
+                object.material.emission = readVector(material.at("emission"));
+            object.material.emissionStrength = material.value("emission_strength", 0.0F);
             object.material.shininess = material.at("shininess").get<float>();
             object.material.texturePath = material.at("texture_ref").get<std::string>();
             parsed.scene.objects.push_back(std::move(object));

@@ -3,7 +3,7 @@
 #include <cmath>
 namespace scene_editor {
 static bool finite(const glm::vec3& v){return std::isfinite(v.x)&&std::isfinite(v.y)&&std::isfinite(v.z);}
-bool Material::valid()const{return finite(color)&&finite(ambient)&&finite(diffuse)&&finite(specular)&&std::isfinite(shininess)&&shininess>0;}
+bool Material::valid()const{return finite(color)&&finite(ambient)&&finite(diffuse)&&finite(specular)&&finite(emission)&&std::isfinite(emissionStrength)&&emissionStrength>=0&&emissionStrength<=10&&std::isfinite(shininess)&&shininess>0;}
 bool SceneObject::valid()const{return !id.empty()&&transform.valid()&&material.valid()&&(kind!=ObjectKind::ImportedModel||!geometryPath.empty());}
 bool Light::valid()const{return !id.empty()&&finite(position)&&finite(direction)&&finite(color)&&std::isfinite(intensity)&&intensity>=0&&(type!=LightType::Directional||glm::length(direction)>1e-6F);}
 bool Scene::add(SceneObject o){if(!o.valid()||find(o.id))return false;objects.push_back(std::move(o));return true;}

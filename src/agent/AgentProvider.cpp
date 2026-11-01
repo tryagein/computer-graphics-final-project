@@ -100,8 +100,8 @@ nlohmann::json planSchema() {
 
 const char* instructions = R"(You plan edits for a native OpenGL scene editor. Return JSON matching the supplied schema.
 Each operation's arguments_json is a JSON object encoded as a string. Use only supported tools and arguments.
-Tools: add_object {type:cube|sphere|plane|imported_model, id?, name?, position?, rotation?, scale?, path?}; update_object {object_id,name?,position?,rotation?,scale?,visible?}; delete_object {object_id}; set_material {object_id,color?,ambient?,diffuse?,specular?,shininess?,roughness?,texture_path?}; add_light {id?,type:point|directional,position?,direction?,color?,intensity?,enabled?}; update_light {light_id,position?,direction?,color?,intensity?,enabled?}; delete_light {light_id}; move_camera {position?,target?,yaw?,pitch?,field_of_view?,near_plane?,far_plane?}; get_scene_state {}; render_scene {}; save_scene/load_scene {filename}.
-Vectors are [x,y,z], colors are [r,g,b] in [0,1]. Y is up. Light limits: four point and two directional. The renderer supports cube, sphere, plane, and a local OBJ path; approximate unsupported forms (such as trees) from primitives. Existing targets must use an exact ID or unique name from scene state. For newly created objects, assign explicit unique IDs and use them in later operations. Never invent a path for an unavailable asset. For missing or ambiguous targets, return a summary with zero operations. Use no more than 24 operations. End visual edits with render_scene. No OpenGL code or arbitrary commands.)";
+Tools: add_object {type:cube|sphere|plane|imported_model, id?, name?, position?, rotation?, scale?, path?}; update_object {object_id,name?,position?,rotation?,scale?,visible?}; delete_object {object_id}; set_material {object_id,color?,ambient?,diffuse?,specular?,emission?,emission_strength?,shininess?,roughness?,texture_path?}; add_light {id?,type:point|directional,position?,direction?,color?,intensity?,enabled?}; update_light {light_id,position?,direction?,color?,intensity?,enabled?}; delete_light {light_id}; move_camera {position?,target?,yaw?,pitch?,field_of_view?,near_plane?,far_plane?}; get_scene_state {}; render_scene {}; save_scene/load_scene {filename}.
+Vectors are [x,y,z], colors are [r,g,b] in [0,1]. Y is up. Light limits: four point and two directional. The renderer supports cube, sphere, plane, and a local OBJ path; approximate unsupported forms (such as trees) from primitives. A visible lamp needs a bulb object with matching warm emission color and emission_strength around 1 to 2, plus a point light at the same position to illuminate nearby objects. Transparency does not produce light. Existing targets must use an exact ID or unique name from scene state. For newly created objects, assign explicit unique IDs and use them in later operations. Never invent a path for an unavailable asset. For missing or ambiguous targets, return a summary with zero operations. Use no more than 24 operations. End visual edits with render_scene. No OpenGL code or arbitrary commands.)";
 
 #ifdef _WIN32
 struct HttpHandle {
@@ -129,7 +129,8 @@ Result postResponse(const ProviderConfig& config, const std::string& body, std::
         proxy.empty() ? WINHTTP_NO_PROXY_NAME : wideAscii(proxy).c_str(),
         WINHTTP_NO_PROXY_BYPASS, 0)};
     if (!session.value) return Result::failure("Could not initialize HTTPS client.");
-    WinHttpSetTimeouts(session.value, 5000, 10000, 10000, 30000);
+    // Scene plans can take longer than a short chat reply, particularly with a proxy.
+    WinHttpSetTimeouts(session.value, 10000, 30000, 30000, 120000);
     HttpHandle connection{WinHttpConnect(session.value, L"api.deepseek.com", INTERNET_DEFAULT_HTTPS_PORT, 0)};
     if (!connection.value) return Result::failure("Could not connect to model service.");
     HttpHandle request{WinHttpOpenRequest(connection.value, L"POST", L"/responses", nullptr,
@@ -140,11 +141,19 @@ Result postResponse(const ProviderConfig& config, const std::string& body, std::
     if (!WinHttpAddRequestHeaders(request.value, headers.c_str(), DWORD(headers.size()),
                                   WINHTTP_ADDREQ_FLAG_ADD))
         return Result::failure("Could not set model request headers.");
+    auto networkFailure = [](const char* stage) {
+        const auto code = GetLastError();
+        if (code == ERROR_WINHTTP_TIMEOUT)
+            return Result::failure(std::string("DeepSeek connection timed out while ") + stage +
+                " (WinHTTP 12002). Check your network or HTTPS_PROXY in .env, then retry.");
+        return Result::failure(std::string("DeepSeek request failed while ") + stage +
+            " (WinHTTP " + std::to_string(code) + ").");
+    };
     if (!WinHttpSendRequest(request.value, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
-                            const_cast<char*>(body.data()), DWORD(body.size()), DWORD(body.size()), 0) ||
-        !WinHttpReceiveResponse(request.value, nullptr))
-        return Result::failure("Model request failed or timed out (WinHTTP " +
-                               std::to_string(GetLastError()) + ").");
+                            const_cast<char*>(body.data()), DWORD(body.size()), DWORD(body.size()), 0))
+        return networkFailure("sending the request");
+    if (!WinHttpReceiveResponse(request.value, nullptr))
+        return networkFailure("waiting for a response");
     DWORD status = 0, statusSize = sizeof(status);
     if (!WinHttpQueryHeaders(request.value, WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
                              WINHTTP_HEADER_NAME_BY_INDEX, &status, &statusSize, WINHTTP_NO_HEADER_INDEX))
@@ -154,7 +163,7 @@ Result postResponse(const ProviderConfig& config, const std::string& body, std::
         char buffer[4096];
         DWORD read = 0;
         if (!WinHttpReadData(request.value, buffer, sizeof(buffer), &read))
-            return Result::failure("Could not read model response.");
+            return networkFailure("reading the response");
         if (!read) break;
         if (response.size() + read > 1024 * 1024)
             return Result::failure("Model response exceeds 1 MB.");

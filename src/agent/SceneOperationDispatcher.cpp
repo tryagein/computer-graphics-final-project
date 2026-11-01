@@ -138,12 +138,15 @@ OperationResult dispatchSceneOperation(const SceneOperation& operation, Scene& s
                 if (args.contains("visible")) candidate.visible = args.at("visible").get<bool>();
             } else {
                 allowOnly(args, {"object_id", "color", "ambient", "diffuse", "specular",
-                                 "shininess", "roughness", "texture_path"});
+                                 "emission", "emission_strength", "shininess", "roughness", "texture_path"});
                 auto& m = candidate.material;
                 optionalColor(args, "color", m.color);
                 optionalColor(args, "ambient", m.ambient);
                 optionalColor(args, "diffuse", m.diffuse);
                 optionalColor(args, "specular", m.specular);
+                optionalColor(args, "emission", m.emission);
+                if (args.contains("emission_strength"))
+                    m.emissionStrength = args.at("emission_strength").get<float>();
                 if (args.contains("shininess")) m.shininess = args.at("shininess").get<float>();
                 if (args.contains("roughness")) {
                     const float roughness = args.at("roughness").get<float>();

@@ -48,6 +48,8 @@ int main() {
         cube.name = "First cube";
         cube.transform.position = {1, 2, 3};
         cube.material.color = {0.2F, 0.5F, 0.8F};
+        cube.material.emission = {1.0F, 0.7F, 0.3F};
+        cube.material.emissionStrength = 1.5F;
         require(scene.add(cube), "could not add cube");
         SceneObject model;
         model.id = "model-A";
@@ -87,10 +89,26 @@ int main() {
         require(restored.selectedId == "model-A", "selection did not round-trip");
         require(restored.find("cube-A")->transform.position.x == 1, "transform did not round-trip");
         require(restored.find("cube-A")->material.color.y == 0.5F, "material did not round-trip");
+        require(restored.find("cube-A")->material.emissionStrength == 1.5F &&
+                restored.find("cube-A")->material.emission.y == 0.7F,
+                "emissive material did not round-trip");
         require(restoredCamera.position().x == 4 && restoredCamera.yaw() == 30 &&
                 restoredCamera.fovDegrees() == 60, "camera did not round-trip");
         require(fs::exists(restored.find("model-A")->geometryPath), "OBJ path did not resolve");
         require(fs::exists(restored.find("model-A")->material.texturePath), "texture path did not resolve");
+        auto legacy = json;
+        for (auto& object : legacy["objects"]) {
+            object["material"].erase("emission");
+            object["material"].erase("emission_strength");
+        }
+        const fs::path legacyFile = saved / "legacy-scene.json";
+        write(legacyFile, legacy.dump());
+        Scene legacyScene;
+        Camera legacyCamera;
+        result = loadSceneFile(legacyFile, legacyScene, legacyCamera);
+        require(result.ok && legacyScene.find("cube-A") &&
+                legacyScene.find("cube-A")->material.emissionStrength == 0,
+                "older scene without emission did not load");
 
         fs::rename(saved, moved);
         const fs::path movedFile = moved / "my-scene.json";
