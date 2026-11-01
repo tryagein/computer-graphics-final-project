@@ -13,8 +13,10 @@ add_executable(scene_editor
   src/renderer/PrimitiveMeshes.cpp src/renderer/Lighting.cpp src/scene/Camera.cpp
   src/renderer/Texture.cpp src/renderer/MaterialBinding.cpp src/renderer/SceneRenderer.cpp
   src/assets/ObjImporter.cpp src/assets/AssetService.cpp
+  src/persistence/SceneSerializer.cpp src/persistence/SceneValidator.cpp
+  src/persistence/ResourcePackager.cpp src/persistence/SceneFileService.cpp
   src/ui/EditorApp.cpp src/ui/CameraControls.cpp src/ui/SceneObjectPanel.cpp
-  src/ui/MaterialPanel.cpp src/ui/LightPanel.cpp src/ui/Notifications.cpp)
+  src/ui/MaterialPanel.cpp src/ui/LightPanel.cpp src/ui/Notifications.cpp src/ui/SceneFilePanel.cpp)
 target_include_directories(scene_editor PRIVATE src)
 target_include_directories(scene_editor PRIVATE ${stb_SOURCE_DIR})
 target_link_libraries(scene_editor PRIVATE glfw glad glm::glm assimp imgui nlohmann_json::nlohmann_json)
@@ -23,4 +25,21 @@ if(MSVC)
   target_compile_options(scene_editor PRIVATE /W4 /permissive- /utf-8)
 else()
   target_compile_options(scene_editor PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+include(CTest)
+if(BUILD_TESTING)
+  add_executable(scene_persistence_tests
+    tests/PersistenceTests.cpp
+    src/scene/Scene.cpp src/scene/Transform.cpp src/scene/Camera.cpp
+    src/persistence/SceneSerializer.cpp src/persistence/SceneValidator.cpp
+    src/persistence/ResourcePackager.cpp src/persistence/SceneFileService.cpp)
+  target_include_directories(scene_persistence_tests PRIVATE src)
+  target_link_libraries(scene_persistence_tests PRIVATE glm::glm nlohmann_json::nlohmann_json)
+  if(MSVC)
+    target_compile_options(scene_persistence_tests PRIVATE /W4 /permissive- /utf-8)
+  else()
+    target_compile_options(scene_persistence_tests PRIVATE -Wall -Wextra -Wpedantic)
+  endif()
+  add_test(NAME scene_persistence COMMAND scene_persistence_tests)
 endif()

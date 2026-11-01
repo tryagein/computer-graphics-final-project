@@ -3,6 +3,7 @@
 #include "ui/MaterialPanel.hpp"
 #include "ui/LightPanel.hpp"
 #include "ui/CameraControls.hpp"
+#include "ui/SceneFilePanel.hpp"
 #include "assets/AssetService.hpp"
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
@@ -23,6 +24,31 @@ void placePanel(const char* name, float x, float y, float w, float h, ImGuiWindo
     ImGui::SetNextWindowPos({x, y});
     ImGui::SetNextWindowSize({w, h});
     ImGui::Begin(name, nullptr, panelFlags | extra);
+}
+
+void drawImportDialog(Scene& scene, Notifications& notifications) {
+    static char importPath[1024]{};
+    static bool initializedPath = false;
+    static std::string importError;
+    if (!initializedPath) {
+        std::snprintf(importPath, sizeof(importPath), "%s/examples/pyramid.obj", SCENE_EDITOR_ASSET_DIR);
+        initializedPath = true;
+    }
+    if (!ImGui::BeginPopupModal("导入 OBJ 模型", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) return;
+    ImGui::TextUnformatted("输入本地 OBJ 路径。默认已填入示例模型。");
+    ImGui::SetNextItemWidth(540);
+    if (ImGui::InputText("文件路径", importPath, sizeof(importPath))) importError.clear();
+    if (ImGui::Button("导入", {100, 0})) {
+        if (addImportedObj(scene, importPath, importError)) {
+            notifications.set("OBJ 已导入，可在左侧对象列表中选择并编辑。");
+            importError.clear();
+            ImGui::CloseCurrentPopup();
+        } else notifications.report(Result::failure(importError));
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("取消", {100, 0})) ImGui::CloseCurrentPopup();
+    if (!importError.empty()) ImGui::TextWrapped("%s", importError.c_str());
+    ImGui::EndPopup();
 }
 }
 
@@ -71,7 +97,7 @@ void EditorApp::draw(Scene& scene, Renderer& renderer, Camera& camera, GLFWwindo
     const float bodyHeight = std::max(1.0F, h - toolbarHeight - footerHeight);
 
     placePanel("##Toolbar", 0, 0, w, toolbarHeight, ImGuiWindowFlags_NoScrollbar);
-    ImGui::TextDisabled("场景编辑器");
+    drawSceneFileButton();
     ImGui::SameLine(130);
     ImGui::TextUnformatted("添加");
     ImGui::SameLine();
@@ -94,6 +120,8 @@ void EditorApp::draw(Scene& scene, Renderer& renderer, Camera& camera, GLFWwindo
         camera = Camera{};
         notifications_.set("相机已重置。");
     }
+    drawSceneFileDialog(scene, camera, renderer, notifications_);
+    drawImportDialog(scene, notifications_);
     ImGui::End();
 
     placePanel("##Scene", 0, toolbarHeight, leftWidth, bodyHeight);
@@ -140,30 +168,6 @@ void EditorApp::draw(Scene& scene, Renderer& renderer, Camera& camera, GLFWwindo
     ImGui::SameLine(360);
     notifications_.draw();
     ImGui::End();
-
-    static char importPath[1024]{};
-    static bool initializedPath = false;
-    static std::string importError;
-    if (!initializedPath) {
-        std::snprintf(importPath, sizeof(importPath), "%s/examples/pyramid.obj", SCENE_EDITOR_ASSET_DIR);
-        initializedPath = true;
-    }
-    if (ImGui::BeginPopupModal("导入 OBJ 模型", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-        ImGui::TextUnformatted("输入本地 OBJ 路径。默认已填入示例模型。");
-        ImGui::SetNextItemWidth(540);
-        if (ImGui::InputText("文件路径", importPath, sizeof(importPath))) importError.clear();
-        if (ImGui::Button("导入", {100, 0})) {
-            if (addImportedObj(scene, importPath, importError)) {
-                notifications_.set("OBJ 已导入，可在左侧对象列表中选择并编辑。");
-                importError.clear();
-                ImGui::CloseCurrentPopup();
-            } else notifications_.report(Result::failure(importError));
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("取消", {100, 0})) ImGui::CloseCurrentPopup();
-        if (!importError.empty()) ImGui::TextWrapped("%s", importError.c_str());
-        ImGui::EndPopup();
-    }
 
     renderer.draw(scene, camera);
     int fbWidth = 1, fbHeight = 1;

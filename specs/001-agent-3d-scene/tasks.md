@@ -75,13 +75,13 @@ description: "Dependency-ordered tasks for the OpenGL scene editor feature"
 
 ### Implementation
 
-- [ ] T027 [P] [US2] Define the versioned scene JSON document and field mappings in `src/persistence/SceneDocument.hpp`
-- [ ] T028 [US2] Implement serialization/deserialization of object IDs, transforms, materials, lights, camera, and resource references in `src/persistence/SceneSerializer.cpp`
-- [ ] T029 [US2] Implement full document and relative resource validation before scene replacement in `src/persistence/SceneValidator.cpp`
-- [ ] T030 [US2] Copy imported OBJ, MTL, and texture dependencies into a sibling resource directory and rewrite relative references in `src/persistence/ResourcePackager.cpp`
-- [ ] T031 [US2] Implement save and load commands with failure-safe scene replacement in `src/persistence/SceneFileService.cpp`
-- [ ] T032 [US2] Add save/load controls and clear success/failure status in `src/ui/SceneFilePanel.cpp`
-- [ ] T033 [US2] Document portable scene directory layout, version behavior, and manual persistence acceptance in `docs/scene-format.md`
+- [X] T027 [P] [US2] Define the versioned scene JSON document and field mappings in `src/persistence/SceneDocument.hpp`
+- [X] T028 [US2] Implement serialization/deserialization of object IDs, transforms, materials, lights, camera, and resource references in `src/persistence/SceneSerializer.cpp`
+- [X] T029 [US2] Implement full document and relative resource validation before scene replacement in `src/persistence/SceneValidator.cpp`
+- [X] T030 [US2] Copy imported OBJ, MTL, and texture dependencies into a sibling resource directory and rewrite relative references in `src/persistence/ResourcePackager.cpp`
+- [X] T031 [US2] Implement save and load commands with failure-safe scene replacement in `src/persistence/SceneFileService.cpp`
+- [X] T032 [US2] Add save/load controls and clear success/failure status in `src/ui/SceneFilePanel.cpp`
+- [X] T033 [US2] Document portable scene directory layout, version behavior, and manual persistence acceptance in `docs/scene-format.md`
 
 **Checkpoint**: Valid scenes reopen with all state and assets after moving the scene directory; invalid files leave the current scene unchanged.
 
