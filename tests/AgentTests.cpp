@@ -92,10 +92,10 @@ void run() {
             {{"type", "output_text"}, {"text", R"({"summary":"Add sphere","operations":[{"operation_id":"s1","tool":"add_object","arguments_json":"{\"type\":\"sphere\"}"}]})"}}
         })}}
     })}};
-    const auto parsed = parseOpenAIPlanResponse(modelResponse);
+    const auto parsed = parseDeepSeekPlanResponse(modelResponse);
     require(parsed.status.ok && executor.load(parsed.plan).ok,
             "model response parsing failed");
-    require(!parseOpenAIPlanResponse({{"status", "incomplete"}, {"output", json::array()}}).status.ok,
+    require(!parseDeepSeekPlanResponse({{"status", "incomplete"}, {"output", json::array()}}).status.ok,
             "incomplete model response accepted");
     ConversationContext context;
     context.add("user", "Add a cube");
@@ -108,7 +108,7 @@ void run() {
     document.camera = camera;
     require(!serializeSceneDocument(document).contains("conversation"),
             "conversation was persisted with scene");
-    require(!OpenAIProvider({}).plan("Add a cube", context, compactSceneState(scene, camera)).status.ok,
+    require(!DeepSeekProvider({}).plan("Add a cube", context, compactSceneState(scene, camera)).status.ok,
             "unconfigured provider did not fail cleanly");
 }
 }

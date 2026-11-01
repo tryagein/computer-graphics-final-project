@@ -4,17 +4,15 @@ Agent 是 OpenGL 编辑器右侧的一个辅助页。场景仍由本地 OpenGL �
 
 ## 启动与模型配置
 
-在启动编辑器的同一个 PowerShell 会话中设置环境变量：
+项目根目录已有 `.env` 文件，打开后在 `DEEPSEEK_API_KEY=` 后填入你的密钥。`DEEPSEEK_MODEL` 默认是 `deepseek-flash`，需要时可改成账号可用的其他模型。网络需要代理时，取消 `HTTPS_PROXY` 行的注释并填写代理地址。保存后重新启动编辑器即可；`.env` 已被 Git 忽略。程序也接受同名进程环境变量，环境变量优先于 `.env`。
+
+从项目根目录双击 `run-editor.cmd`，或在 PowerShell 中运行：
 
 ```powershell
-$env:OPENAI_API_KEY = '你的 API key'
-$env:OPENAI_MODEL = '你可用且支持结构化输出的模型名'
-# 仅在网络需要代理时设置：
-$env:HTTPS_PROXY = 'http://127.0.0.1:7897'
-& '.\build-vs\Debug\scene_editor.exe'
+.\run-editor.cmd
 ```
 
-在 CLion 中，可以把 `OPENAI_API_KEY`、`OPENAI_MODEL` 和可选的 `HTTPS_PROXY` 填入 `scene_editor` 的 Run/Debug Configuration 的 Environment variables，然后运行目标。不要把密钥写入源码、场景文件或提交到 Git。程序只从进程环境读取密钥，不把对话写入场景文件。模型请求使用 OpenAI [Responses API](https://developers.openai.com/api/docs/guides/text) 和 [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)；当前客户端面向 Windows。
+在 CLion 中，运行 `scene_editor` 目标即可；程序会从项目根目录读取 `.env`，与工作目录无关。不要把密钥写入源码、场景文件或提交到 Git。程序不把对话写入场景文件。模型请求使用 DeepSeek [Responses API](https://api-docs.deepseek.com/guides/responses_api/) 的结构化 JSON 输出；当前客户端面向 Windows。API 密钥为空时，仍可使用编辑器与下述离线 JSON 验收。
 
 进入右侧 **Agent** 页，在输入框描述场景，点击 **生成并执行**。界面会显示计划摘要、每一步的执行结果和失败原因。可点击 **清空会话** 删除当前窗口的对话上下文。关闭应用也会丢弃对话上下文。
 

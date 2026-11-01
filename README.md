@@ -17,6 +17,8 @@ cmake --build build --config Release --target scene_editor --parallel 4
 
 Run `build/Release/scene_editor.exe` with Visual Studio generators or `build/scene_editor.exe` with single-configuration generators. Build from CLion by opening this directory as a CMake project, selecting a Visual Studio or MinGW toolchain, reloading CMake, then running the `scene_editor` target. CLion's bundled CMake can be used if `cmake` is not on `PATH`. The first configure downloads dependencies; if your network requires an HTTP proxy, configure Git's proxy before reloading CMake. See `DEPENDENCIES.md` for versions and provenance.
 
+For the existing Visual Studio build in this repository, double-click `run-editor.cmd` in the project root. It starts the built editor from the correct directory and keeps startup error output visible. The DeepSeek key belongs in the ignored `.env` file; see `docs/agent-setup.md`.
+
 The editor starts with a ground plane, cube, point light, and directional light. The top toolbar adds a cube, sphere, or plane and immediately selects it; it can also import an OBJ, add the example model, or reset the camera. The left panel lists objects and toggles visibility. The center is the 3D viewport. The right panel has Properties and Lighting tabs. Click the viewport, hold the right mouse button to look around, use W/A/S/D to move, and Q/E to move vertically. Changes appear immediately in the viewport; status and import errors appear at the bottom. The graphics acceptance steps are in `docs/graphics-acceptance.md`.
 
 ### 界面快速上手

@@ -26,14 +26,14 @@ public:
                               const nlohmann::json& sceneState) = 0;
 };
 
-class OpenAIProvider final : public AgentProvider {
+class DeepSeekProvider final : public AgentProvider {
 public:
-    explicit OpenAIProvider(ProviderConfig config) : config_(std::move(config)) {}
+    explicit DeepSeekProvider(ProviderConfig config) : config_(std::move(config)) {}
     ProviderPlan plan(const std::string& request, const ConversationContext& context,
                       const nlohmann::json& sceneState) override;
 private:
     ProviderConfig config_;
 };
 
-ProviderPlan parseOpenAIPlanResponse(const nlohmann::json& response);
+ProviderPlan parseDeepSeekPlanResponse(const nlohmann::json& response);
 }

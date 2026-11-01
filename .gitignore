@@ -15,5 +15,7 @@
 *.exe
 *.log
 .env*
+!.env.example
+imgui.ini
 Thumbs.db
 .DS_Store

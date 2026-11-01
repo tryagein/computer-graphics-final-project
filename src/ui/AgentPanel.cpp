@@ -56,7 +56,7 @@ void AgentPanel::draw(Scene& scene, Camera& camera) {
     const auto config = ProviderConfig::fromEnvironment();
     ImGui::TextWrapped("描述想创建或修改的场景。Agent 只调用已验证的场景工具。");
     ImGui::TextDisabled("%s", config.ready() ? "自然语言服务已配置" :
-        "自然语言需设置 OPENAI_API_KEY 和 OPENAI_MODEL");
+        "自然语言需填写项目根目录 .env 中的 DEEPSEEK_API_KEY");
     ImGui::SeparatorText("对话");
     if (ImGui::BeginChild("AgentHistory", {0, 150}, ImGuiChildFlags_Borders)) {
         for (const auto& turn : context_.turns()) {
@@ -96,7 +96,7 @@ void AgentPanel::draw(Scene& scene, Camera& camera) {
                 const auto state = pending_;
                 std::thread([state, config, request, history, snapshot]() mutable {
                     ProviderPlan result;
-                    try { result = OpenAIProvider(config).plan(request, history, snapshot); }
+                    try { result = DeepSeekProvider(config).plan(request, history, snapshot); }
                     catch (const std::exception& error) {
                         result.status = Result::failure(std::string("Model request failed: ") + error.what());
                     }

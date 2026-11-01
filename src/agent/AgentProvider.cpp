@@ -1,6 +1,9 @@
 #include "agent/AgentProvider.hpp"
 #include "agent/PlanExecutor.hpp"
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <map>
 #include <memory>
 #include <stdexcept>
 
@@ -23,6 +26,49 @@ std::string env(const char* name) {
     const char* value = std::getenv(name);
     return value ? value : "";
 #endif
+}
+
+std::string trim(std::string value) {
+    const auto first = value.find_first_not_of(" \t\r\n");
+    if (first == std::string::npos) return {};
+    const auto last = value.find_last_not_of(" \t\r\n");
+    return value.substr(first, last - first + 1);
+}
+
+std::map<std::string, std::string> dotenv() {
+#ifdef SCENE_EDITOR_PROJECT_DIR
+    const auto file = std::filesystem::path(SCENE_EDITOR_PROJECT_DIR) / ".env";
+#else
+    const auto file = std::filesystem::current_path() / ".env";
+#endif
+    std::ifstream input(file, std::ios::binary);
+    std::map<std::string, std::string> values;
+    if (!input) return values;
+    std::string line;
+    size_t bytes = 0;
+    while (std::getline(input, line) && bytes < 16384) {
+        bytes += line.size() + 1;
+        if (line.size() > 4096) continue;
+        line = trim(std::move(line));
+        if (line.empty() || line.front() == '#') continue;
+        if (line.rfind("export ", 0) == 0) line.erase(0, 7);
+        const auto equal = line.find('=');
+        if (equal == std::string::npos) continue;
+        auto key = trim(line.substr(0, equal));
+        auto value = trim(line.substr(equal + 1));
+        if (value.size() >= 2 && ((value.front() == '"' && value.back() == '"') ||
+                                  (value.front() == '\'' && value.back() == '\'')))
+            value = value.substr(1, value.size() - 2);
+        values[std::move(key)] = std::move(value);
+    }
+    return values;
+}
+
+std::string setting(const std::map<std::string, std::string>& file, const char* name) {
+    const auto processValue = env(name);
+    if (!processValue.empty()) return processValue;
+    const auto it = file.find(name);
+    return it == file.end() ? std::string{} : it->second;
 }
 
 nlohmann::json planSchema() {
@@ -84,9 +130,9 @@ Result postResponse(const ProviderConfig& config, const std::string& body, std::
         WINHTTP_NO_PROXY_BYPASS, 0)};
     if (!session.value) return Result::failure("Could not initialize HTTPS client.");
     WinHttpSetTimeouts(session.value, 5000, 10000, 10000, 30000);
-    HttpHandle connection{WinHttpConnect(session.value, L"api.openai.com", INTERNET_DEFAULT_HTTPS_PORT, 0)};
+    HttpHandle connection{WinHttpConnect(session.value, L"api.deepseek.com", INTERNET_DEFAULT_HTTPS_PORT, 0)};
     if (!connection.value) return Result::failure("Could not connect to model service.");
-    HttpHandle request{WinHttpOpenRequest(connection.value, L"POST", L"/v1/responses", nullptr,
+    HttpHandle request{WinHttpOpenRequest(connection.value, L"POST", L"/responses", nullptr,
         WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE)};
     if (!request.value) return Result::failure("Could not create model request.");
     const auto headers = std::wstring(L"Content-Type: application/json\r\nAuthorization: Bearer ") +
@@ -130,12 +176,15 @@ Result postResponse(const ProviderConfig& config, const std::string& body, std::
 }
 
 ProviderConfig ProviderConfig::fromEnvironment() {
-    auto proxy = env("HTTPS_PROXY");
+    const auto file = dotenv();
+    auto proxy = setting(file, "HTTPS_PROXY");
     if (proxy.empty()) proxy = env("https_proxy");
-    return {env("OPENAI_API_KEY"), env("OPENAI_MODEL"), proxy};
+    auto model = setting(file, "DEEPSEEK_MODEL");
+    if (model.empty()) model = "deepseek-flash";
+    return {setting(file, "DEEPSEEK_API_KEY"), model, proxy};
 }
 
-ProviderPlan parseOpenAIPlanResponse(const nlohmann::json& response) {
+ProviderPlan parseDeepSeekPlanResponse(const nlohmann::json& response) {
     try {
         if (response.at("status") != "completed")
             return {Result::failure("Model response was incomplete."), {}};
@@ -161,11 +210,11 @@ ProviderPlan parseOpenAIPlanResponse(const nlohmann::json& response) {
     }
 }
 
-ProviderPlan OpenAIProvider::plan(const std::string& request,
+ProviderPlan DeepSeekProvider::plan(const std::string& request,
                                   const ConversationContext& context,
                                   const nlohmann::json& sceneState) {
     if (!config_.ready())
-        return {Result::failure("Set OPENAI_API_KEY and OPENAI_MODEL before using natural language."), {}};
+        return {Result::failure("Set DEEPSEEK_API_KEY in the project .env file before using natural language."), {}};
     if (config_.apiKey.size() > 512 || config_.apiKey.find_first_of("\r\n") != std::string::npos)
         return {Result::failure("Invalid API key format."), {}};
     if (config_.model.size() > 100 || config_.model.find_first_of("\r\n") != std::string::npos)
@@ -180,7 +229,7 @@ ProviderPlan OpenAIProvider::plan(const std::string& request,
         {"model", config_.model}, {"instructions", instructions},
         {"input", "Recent conversation:\n" + history + "\nCurrent scene state:\n" +
                   snapshot + "\nLatest user request:\n" + request},
-        {"store", false}, {"max_output_tokens", 4096},
+        {"max_output_tokens", 4096},
         {"text", {{"format", {{"type", "json_schema"}, {"name", "scene_plan"},
             {"strict", true}, {"schema", planSchema()}}}}}
     };
@@ -188,13 +237,13 @@ ProviderPlan OpenAIProvider::plan(const std::string& request,
     std::string raw;
     auto posted = postResponse(config_, body.dump(), raw);
     if (!posted.ok) return {posted, {}};
-    try { return parseOpenAIPlanResponse(nlohmann::json::parse(raw)); }
+    try { return parseDeepSeekPlanResponse(nlohmann::json::parse(raw)); }
     catch (const std::exception& error) {
         return {Result::failure(std::string("Invalid model JSON: ") + error.what()), {}};
     }
 #else
     (void)body;
-    return {Result::failure("OpenAI provider is currently available on Windows only."), {}};
+    return {Result::failure("DeepSeek provider is currently available on Windows only."), {}};
 #endif
 }
 }
