@@ -22,3 +22,5 @@ Executed on 2026-11-01 (Asia/Shanghai) against the Visual Studio 2022 Debug buil
 `ctest --test-dir build-vs -C Debug --output-on-failure` passed 2/2 tests after these checks. The live Agent scenario is opt-in and uses a real API request; run it with `DEEPSEEK_LIVE_TEST=1` and `DEEPSEEK_LIVE_SCENARIO=1` as described in [agent-setup.md](agent-setup.md).
 
 The window controls, file picker, and Agent progress panel were not automated by this run; they remain the final interactive visual check when presenting the course demo. The earlier graphics and persistence workflows were user-accepted in this project conversation. This representative quickstart does not claim the larger 10-file OBJ, 20-request Agent, or 10-trial persistence sample sizes in the specification's statistical success criteria.
+
+Phase 7 adds detailed OBJ prefabs, an Agent asset catalog, snow texture, and directional shadows. Its separate evidence is in [phase7-acceptance.md](phase7-acceptance.md); the Phase 6 measurements above remain historical.

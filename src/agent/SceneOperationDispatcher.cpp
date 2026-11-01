@@ -1,6 +1,7 @@
 #include "agent/SceneOperationDispatcher.hpp"
 #include "agent/SceneStateQuery.hpp"
 #include "assets/AssetService.hpp"
+#include "assets/PrefabCatalog.hpp"
 #include "persistence/SceneFileService.hpp"
 #include <algorithm>
 #include <cmath>
@@ -78,6 +79,15 @@ Light* findLight(Scene& scene, const std::string& id) {
 OperationResult dispatchSceneOperation(const SceneOperation& operation, Scene& scene, Camera& camera) {
     const auto& args = operation.arguments;
     try {
+        if (operation.tool == "add_prefab") {
+            allowOnly(args, {"asset_id", "id", "position"});
+            glm::vec3 position{0};
+            optionalVector(args, "position", position);
+            const auto result = addPrefab(scene, requiredString(args, "asset_id"), position,
+                args.contains("id") ? requiredString(args, "id") : std::string{});
+            return {result.ok, false, result.ok, result.message,
+                {{"object_id", result.objectId}, {"light_id", result.lightId}}};
+        }
         if (operation.tool == "add_object") {
             allowOnly(args, {"type", "id", "name", "position", "rotation", "scale", "path"});
             const auto type = requiredString(args, "type");

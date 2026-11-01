@@ -1,5 +1,6 @@
 #include "persistence/ResourcePackager.hpp"
 #include <fstream>
+#include <map>
 #include <sstream>
 #include <stdexcept>
 
@@ -109,10 +110,19 @@ Result packageSceneResources(SceneDocument& document, const std::filesystem::pat
         fs::create_directories(stagingDirectory);
         document.resources.clear();
         unsigned modelIndex = 0, textureCounter = 0;
+        std::map<fs::path, std::string> packagedModels;
         for (auto& object : document.scene.objects) {
-            if (object.kind == ObjectKind::ImportedModel)
-                packageObj(document, object, modelIndex++, stagingDirectory,
-                           finalDirectoryName, textureCounter);
+            if (object.kind == ObjectKind::ImportedModel) {
+                const auto source = sourceFile(object.geometryPath);
+                const auto found = packagedModels.find(source);
+                if (found != packagedModels.end()) {
+                    object.geometryPath = found->second;
+                } else {
+                    packageObj(document, object, modelIndex++, stagingDirectory,
+                               finalDirectoryName, textureCounter);
+                    packagedModels.emplace(source, object.geometryPath);
+                }
+            }
             if (!object.material.texturePath.empty()) {
                 object.material.texturePath = copyTexture(document, object.material.texturePath,
                     stagingDirectory, finalDirectoryName, "textures", textureCounter);

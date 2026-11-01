@@ -4,7 +4,7 @@
 namespace scene_editor {
 Result decodeOperation(const nlohmann::json& value, SceneOperation& operation) {
     static const std::set<std::string> allowed = {
-        "add_object", "update_object", "delete_object", "set_material",
+        "add_object", "add_prefab", "update_object", "delete_object", "set_material",
         "add_light", "update_light", "delete_light", "move_camera",
         "get_scene_state", "render_scene", "save_scene", "load_scene"
     };

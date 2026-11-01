@@ -1,0 +1,24 @@
+newmtl timber
+Ka .08 .05 .03
+Kd .37 .23 .13
+Ks .08 .07 .05
+newmtl door
+Ka .04 .025 .015
+Kd .16 .08 .04
+Ks .04 .03 .02
+newmtl window-glass
+Ka .10 .07 .04
+Kd .85 .53 .24
+Ke .70 .40 .16
+newmtl trim
+Ka .10 .07 .04
+Kd .48 .31 .16
+Ks .10 .08 .06
+newmtl roof
+Ka .04 .05 .06
+Kd .12 .16 .20
+Ks .10 .12 .15
+newmtl snow
+Ka .15 .17 .19
+Kd .80 .87 .94
+Ks .15 .18 .20

@@ -1,0 +1,15 @@
+newmtl dark-metal
+Ka .05 .05 .06
+Kd .16 .19 .23
+Ks .38 .42 .46
+Ns 90
+newmtl brass
+Ka .10 .07 .03
+Kd .53 .36 .15
+Ks .48 .40 .25
+Ns 90
+newmtl warm-glass
+Ka .12 .09 .05
+Kd 1 .74 .38
+Ke 1 .72 .40
+Ks .15 .12 .08

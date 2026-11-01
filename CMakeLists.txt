@@ -12,7 +12,7 @@ add_executable(scene_editor
   src/renderer/ShaderProgram.cpp src/renderer/Renderer.cpp src/renderer/Mesh.cpp
   src/renderer/PrimitiveMeshes.cpp src/renderer/Lighting.cpp src/scene/Camera.cpp
   src/renderer/Texture.cpp src/renderer/MaterialBinding.cpp src/renderer/SceneRenderer.cpp
-  src/assets/ObjImporter.cpp src/assets/AssetService.cpp
+  src/assets/ObjImporter.cpp src/assets/AssetService.cpp src/assets/PrefabCatalog.cpp
   src/persistence/SceneSerializer.cpp src/persistence/SceneValidator.cpp
   src/persistence/ResourcePackager.cpp src/persistence/SceneFileService.cpp
   src/agent/OperationCodec.cpp src/agent/SceneStateQuery.cpp
@@ -39,12 +39,13 @@ include(CTest)
 if(BUILD_TESTING)
   add_executable(generate_course_demo
     tools/GenerateCourseDemo.cpp
+    src/assets/PrefabCatalog.cpp src/assets/ObjImporter.cpp
     src/scene/Scene.cpp src/scene/Transform.cpp src/scene/Camera.cpp
     src/persistence/SceneSerializer.cpp src/persistence/SceneValidator.cpp
     src/persistence/ResourcePackager.cpp src/persistence/SceneFileService.cpp)
   target_include_directories(generate_course_demo PRIVATE src)
   target_compile_definitions(generate_course_demo PRIVATE SCENE_EDITOR_ASSET_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets")
-  target_link_libraries(generate_course_demo PRIVATE glm::glm nlohmann_json::nlohmann_json)
+  target_link_libraries(generate_course_demo PRIVATE glad glm::glm nlohmann_json::nlohmann_json assimp)
   add_executable(scene_persistence_tests
     tests/PersistenceTests.cpp
     src/scene/Scene.cpp src/scene/Transform.cpp src/scene/Camera.cpp
@@ -61,7 +62,7 @@ if(BUILD_TESTING)
   add_executable(scene_agent_tests
     tests/AgentTests.cpp
     src/scene/Scene.cpp src/scene/Transform.cpp src/scene/Camera.cpp
-    src/assets/ObjImporter.cpp src/assets/AssetService.cpp
+    src/assets/ObjImporter.cpp src/assets/AssetService.cpp src/assets/PrefabCatalog.cpp
     src/persistence/SceneSerializer.cpp src/persistence/SceneValidator.cpp
     src/persistence/ResourcePackager.cpp src/persistence/SceneFileService.cpp
     src/agent/OperationCodec.cpp src/agent/SceneStateQuery.cpp

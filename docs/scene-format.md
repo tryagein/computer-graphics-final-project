@@ -19,7 +19,7 @@ Move or copy the JSON file and its matching `.resources` directory together. Pat
 ## Document fields
 
 - `schema_version`: integer `1`. Other versions are rejected before the open scene changes.
-- `objects`: stable `id`, `display_name`, `kind` (`cube`, `sphere`, `plane`, `imported_model`), `visible`, `geometry_ref`, `material_override`, `transform` (`position`, `rotation_degrees`, `scale`), and inline `material` (`base_color`, `ambient`, `diffuse`, `specular`, `shininess`, `texture_ref`).
+- `objects`: stable `id`, `display_name`, `kind` (`cube`, `sphere`, `plane`, `imported_model`), `visible`, `geometry_ref`, `material_override`, `transform` (`position`, `rotation_degrees`, `scale`), and inline `material` (`base_color`, `ambient`, `diffuse`, `specular`, `emission`, `emission_strength`, `shininess`, `texture_ref`). Older version-1 scenes without the two emission fields load with zero emission.
 - `lights`: stable `id`, `type` (`point` or `directional`), `position`, `direction`, `color`, `intensity`, and `enabled`.
 - `camera`: `position`, `yaw`, `pitch`, `field_of_view`, `near_plane`, and `far_plane`.
 - `resources`: every copied file's `relative_path` and `kind` (`model`, `material_library`, or `texture`).
@@ -32,6 +32,8 @@ Saving stages the JSON and assets before replacing an existing save. On an I/O f
 ## Packaged OBJ/MTL subset
 
 OBJ `mtllib` entries with whitespace-separated filenames are copied and rewritten to local MTL files. MTL `map_Kd` accepts a single texture filename without options and is copied and rewritten beside the MTL. Texture directives such as bump, displacement, or option-bearing `map_Kd` lines are rejected on save with an error. These limits keep the portable package consistent with the renderer's diffuse-texture scope. Imported geometry and material editing remains available before saving.
+
+MTL `Ke` is read as emissive color. It does not create a light entity: add a point light when the model should illuminate nearby geometry. Built-in prefabs package their source OBJ and MTL files through the same path as user-imported OBJ models.
 
 ## Manual acceptance
 

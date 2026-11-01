@@ -81,3 +81,7 @@ tests/
 ## Complexity Tracking
 
 No constitution violations requiring justification. The Agent adapter is a separate module because provider/network failure must not affect direct graphics editing; it is not a separately deployed service.
+
+## Phase 7 implementation note
+
+After the Phase 6 baseline demonstration, the selected directional shadow-map extension and built-in OBJ asset catalog were implemented. The renderer reuses imported mesh buffers for the depth and color passes. The Agent receives only stable prefab asset IDs, while scene persistence copies the resolved OBJ/MTL/PNG files. The graphics pipeline, user controls, limitations, and 100-object performance evidence are documented in `docs/phase7-graphics.md`, `docs/phase7-acceptance.md`, and `docs/performance-results.md`.

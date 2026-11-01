@@ -14,6 +14,27 @@
   "lights": [
     {
       "color": [
+        1.0,
+        0.7200000286102295,
+        0.4000000059604645
+      ],
+      "direction": [
+        -0.5,
+        -1.0,
+        -0.30000001192092896
+      ],
+      "enabled": true,
+      "id": "warm-lamp-light",
+      "intensity": 2.200000047683716,
+      "position": [
+        3.4200000762939453,
+        2.8499999046325684,
+        0.0
+      ],
+      "type": "point"
+    },
+    {
+      "color": [
         0.4000000059604645,
         0.550000011920929,
         0.8999999761581421
@@ -32,27 +53,6 @@
         1.0
       ],
       "type": "directional"
-    },
-    {
-      "color": [
-        1.0,
-        0.7200000286102295,
-        0.4000000059604645
-      ],
-      "direction": [
-        -0.5,
-        -1.0,
-        -0.30000001192092896
-      ],
-      "enabled": true,
-      "id": "warm-lamp",
-      "intensity": 2.200000047683716,
-      "position": [
-        2.700000047683716,
-        2.799999952316284,
-        0.0
-      ],
-      "type": "point"
     }
   ],
   "objects": [
@@ -89,7 +89,7 @@
           0.30000001192092896,
           0.30000001192092896
         ],
-        "texture_ref": ""
+        "texture_ref": "course-demo.resources/textures/texture-0.png"
       },
       "material_override": false,
       "transform": {
@@ -112,10 +112,10 @@
       "visible": true
     },
     {
-      "display_name": "Tree trunk 1",
-      "geometry_ref": "",
-      "id": "tree-trunk-0",
-      "kind": "cube",
+      "display_name": "Snow pine",
+      "geometry_ref": "course-demo.resources/model-0/model.obj",
+      "id": "tree-1",
+      "kind": "imported_model",
       "material": {
         "ambient": [
           0.15000000596046448,
@@ -123,9 +123,9 @@
           0.15000000596046448
         ],
         "base_color": [
-          0.3499999940395355,
-          0.2199999988079071,
-          0.12999999523162842
+          0.2800000011920929,
+          0.1599999964237213,
+          0.07999999821186066
         ],
         "diffuse": [
           0.800000011920929,
@@ -137,12 +137,12 @@
           0.0,
           0.0
         ],
-        "emission_strength": 0.0,
+        "emission_strength": 1.399999976158142,
         "shininess": 32.0,
         "specular": [
-          0.30000001192092896,
-          0.30000001192092896,
-          0.30000001192092896
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806
         ],
         "texture_ref": ""
       },
@@ -150,7 +150,7 @@
       "transform": {
         "position": [
           -3.0,
-          0.699999988079071,
+          0.0,
           -1.5
         ],
         "rotation_degrees": [
@@ -159,18 +159,18 @@
           0.0
         ],
         "scale": [
-          0.25,
-          1.399999976158142,
-          0.25
+          1.0,
+          1.0,
+          1.0
         ]
       },
       "visible": true
     },
     {
-      "display_name": "Tree crown 1",
-      "geometry_ref": "",
-      "id": "tree-crown-0",
-      "kind": "sphere",
+      "display_name": "Snow pine",
+      "geometry_ref": "course-demo.resources/model-0/model.obj",
+      "id": "tree-2",
+      "kind": "imported_model",
       "material": {
         "ambient": [
           0.15000000596046448,
@@ -178,9 +178,9 @@
           0.15000000596046448
         ],
         "base_color": [
-          0.10999999940395355,
-          0.33000001311302185,
-          0.27000001072883606
+          0.2800000011920929,
+          0.1599999964237213,
+          0.07999999821186066
         ],
         "diffuse": [
           0.800000011920929,
@@ -192,67 +192,12 @@
           0.0,
           0.0
         ],
-        "emission_strength": 0.0,
+        "emission_strength": 1.399999976158142,
         "shininess": 32.0,
         "specular": [
-          0.30000001192092896,
-          0.30000001192092896,
-          0.30000001192092896
-        ],
-        "texture_ref": ""
-      },
-      "material_override": false,
-      "transform": {
-        "position": [
-          -3.0,
-          1.649999976158142,
-          -1.5
-        ],
-        "rotation_degrees": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          0.800000011920929,
-          1.0499999523162842,
-          0.800000011920929
-        ]
-      },
-      "visible": true
-    },
-    {
-      "display_name": "Tree trunk 2",
-      "geometry_ref": "",
-      "id": "tree-trunk-1",
-      "kind": "cube",
-      "material": {
-        "ambient": [
-          0.15000000596046448,
-          0.15000000596046448,
-          0.15000000596046448
-        ],
-        "base_color": [
-          0.3499999940395355,
-          0.2199999988079071,
-          0.12999999523162842
-        ],
-        "diffuse": [
-          0.800000011920929,
-          0.800000011920929,
-          0.800000011920929
-        ],
-        "emission": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "emission_strength": 0.0,
-        "shininess": 32.0,
-        "specular": [
-          0.30000001192092896,
-          0.30000001192092896,
-          0.30000001192092896
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806
         ],
         "texture_ref": ""
       },
@@ -260,7 +205,7 @@
       "transform": {
         "position": [
           -0.5,
-          0.699999988079071,
+          0.0,
           -0.19999998807907104
         ],
         "rotation_degrees": [
@@ -269,18 +214,18 @@
           0.0
         ],
         "scale": [
-          0.25,
-          1.399999976158142,
-          0.25
+          1.0,
+          1.0,
+          1.0
         ]
       },
       "visible": true
     },
     {
-      "display_name": "Tree crown 2",
-      "geometry_ref": "",
-      "id": "tree-crown-1",
-      "kind": "sphere",
+      "display_name": "Snow pine",
+      "geometry_ref": "course-demo.resources/model-0/model.obj",
+      "id": "tree-3",
+      "kind": "imported_model",
       "material": {
         "ambient": [
           0.15000000596046448,
@@ -288,9 +233,9 @@
           0.15000000596046448
         ],
         "base_color": [
-          0.10999999940395355,
-          0.33000001311302185,
-          0.27000001072883606
+          0.2800000011920929,
+          0.1599999964237213,
+          0.07999999821186066
         ],
         "diffuse": [
           0.800000011920929,
@@ -302,21 +247,21 @@
           0.0,
           0.0
         ],
-        "emission_strength": 0.0,
+        "emission_strength": 1.399999976158142,
         "shininess": 32.0,
         "specular": [
-          0.30000001192092896,
-          0.30000001192092896,
-          0.30000001192092896
+          0.05000000074505806,
+          0.05000000074505806,
+          0.05000000074505806
         ],
         "texture_ref": ""
       },
       "material_override": false,
       "transform": {
         "position": [
-          -0.5,
-          1.649999976158142,
-          -0.19999998807907104
+          2.0,
+          0.0,
+          -1.5
         ],
         "rotation_degrees": [
           0.0,
@@ -324,18 +269,18 @@
           0.0
         ],
         "scale": [
-          0.800000011920929,
-          1.0499999523162842,
-          0.800000011920929
+          1.0,
+          1.0,
+          1.0
         ]
       },
       "visible": true
     },
     {
-      "display_name": "Tree trunk 3",
-      "geometry_ref": "",
-      "id": "tree-trunk-2",
-      "kind": "cube",
+      "display_name": "Street lamp",
+      "geometry_ref": "course-demo.resources/model-1/model.obj",
+      "id": "warm-lamp",
+      "kind": "imported_model",
       "material": {
         "ambient": [
           0.15000000596046448,
@@ -343,8 +288,63 @@
           0.15000000596046448
         ],
         "base_color": [
-          0.3499999940395355,
-          0.2199999988079071,
+          0.1599999964237213,
+          0.1899999976158142,
+          0.23000000417232513
+        ],
+        "diffuse": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929
+        ],
+        "emission": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "emission_strength": 1.399999976158142,
+        "shininess": 90.0,
+        "specular": [
+          0.3799999952316284,
+          0.41999998688697815,
+          0.46000000834465027
+        ],
+        "texture_ref": ""
+      },
+      "material_override": false,
+      "transform": {
+        "position": [
+          2.700000047683716,
+          0.0,
+          0.0
+        ],
+        "rotation_degrees": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "visible": true
+    },
+    {
+      "display_name": "Snow cabin",
+      "geometry_ref": "course-demo.resources/model-2/model.obj",
+      "id": "snow-cabin",
+      "kind": "imported_model",
+      "material": {
+        "ambient": [
+          0.15000000596046448,
+          0.15000000596046448,
+          0.15000000596046448
+        ],
+        "base_color": [
+          0.3700000047683716,
+          0.23000000417232513,
           0.12999999523162842
         ],
         "diffuse": [
@@ -357,21 +357,21 @@
           0.0,
           0.0
         ],
-        "emission_strength": 0.0,
+        "emission_strength": 1.399999976158142,
         "shininess": 32.0,
         "specular": [
-          0.30000001192092896,
-          0.30000001192092896,
-          0.30000001192092896
+          0.07999999821186066,
+          0.07000000029802322,
+          0.05000000074505806
         ],
         "texture_ref": ""
       },
       "material_override": false,
       "transform": {
         "position": [
-          2.0,
-          0.699999988079071,
-          -1.5
+          -1.2000000476837158,
+          0.0,
+          -4.0
         ],
         "rotation_degrees": [
           0.0,
@@ -379,181 +379,16 @@
           0.0
         ],
         "scale": [
-          0.25,
-          1.399999976158142,
-          0.25
-        ]
-      },
-      "visible": true
-    },
-    {
-      "display_name": "Tree crown 3",
-      "geometry_ref": "",
-      "id": "tree-crown-2",
-      "kind": "sphere",
-      "material": {
-        "ambient": [
-          0.15000000596046448,
-          0.15000000596046448,
-          0.15000000596046448
-        ],
-        "base_color": [
-          0.10999999940395355,
-          0.33000001311302185,
-          0.27000001072883606
-        ],
-        "diffuse": [
-          0.800000011920929,
-          0.800000011920929,
-          0.800000011920929
-        ],
-        "emission": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "emission_strength": 0.0,
-        "shininess": 32.0,
-        "specular": [
-          0.30000001192092896,
-          0.30000001192092896,
-          0.30000001192092896
-        ],
-        "texture_ref": ""
-      },
-      "material_override": false,
-      "transform": {
-        "position": [
-          2.0,
-          1.649999976158142,
-          -1.5
-        ],
-        "rotation_degrees": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          0.800000011920929,
-          1.0499999523162842,
-          0.800000011920929
-        ]
-      },
-      "visible": true
-    },
-    {
-      "display_name": "Street lamp post",
-      "geometry_ref": "",
-      "id": "lamp-post",
-      "kind": "cube",
-      "material": {
-        "ambient": [
-          0.15000000596046448,
-          0.15000000596046448,
-          0.15000000596046448
-        ],
-        "base_color": [
-          0.2199999988079071,
-          0.25,
-          0.3100000023841858
-        ],
-        "diffuse": [
-          0.800000011920929,
-          0.800000011920929,
-          0.800000011920929
-        ],
-        "emission": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "emission_strength": 0.0,
-        "shininess": 32.0,
-        "specular": [
-          0.30000001192092896,
-          0.30000001192092896,
-          0.30000001192092896
-        ],
-        "texture_ref": ""
-      },
-      "material_override": false,
-      "transform": {
-        "position": [
-          2.700000047683716,
-          1.350000023841858,
-          0.0
-        ],
-        "rotation_degrees": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          0.11999999731779099,
-          2.700000047683716,
-          0.11999999731779099
-        ]
-      },
-      "visible": true
-    },
-    {
-      "display_name": "Warm street lamp",
-      "geometry_ref": "",
-      "id": "lamp-head",
-      "kind": "sphere",
-      "material": {
-        "ambient": [
-          0.15000000596046448,
-          0.15000000596046448,
-          0.15000000596046448
-        ],
-        "base_color": [
           1.0,
-          0.75,
-          0.36000001430511475
-        ],
-        "diffuse": [
-          0.800000011920929,
-          0.800000011920929,
-          0.800000011920929
-        ],
-        "emission": [
           1.0,
-          0.7200000286102295,
-          0.4000000059604645
-        ],
-        "emission_strength": 1.2999999523162842,
-        "shininess": 32.0,
-        "specular": [
-          0.30000001192092896,
-          0.30000001192092896,
-          0.30000001192092896
-        ],
-        "texture_ref": ""
-      },
-      "material_override": false,
-      "transform": {
-        "position": [
-          2.700000047683716,
-          2.799999952316284,
-          0.0
-        ],
-        "rotation_degrees": [
-          0.0,
-          0.0,
-          0.0
-        ],
-        "scale": [
-          0.2800000011920929,
-          0.2800000011920929,
-          0.2800000011920929
+          1.0
         ]
       },
       "visible": true
     },
     {
       "display_name": "Textured OBJ crate",
-      "geometry_ref": "course-demo.resources/model-0/model.obj",
+      "geometry_ref": "course-demo.resources/model-3/model.obj",
       "id": "textured-crate",
       "kind": "imported_model",
       "material": {
@@ -610,7 +445,7 @@
   "resources": [
     {
       "kind": "texture",
-      "relative_path": "course-demo.resources/model-0/texture-0.png"
+      "relative_path": "course-demo.resources/textures/texture-0.png"
     },
     {
       "kind": "material_library",
@@ -619,6 +454,34 @@
     {
       "kind": "model",
       "relative_path": "course-demo.resources/model-0/model.obj"
+    },
+    {
+      "kind": "material_library",
+      "relative_path": "course-demo.resources/model-1/material-0.mtl"
+    },
+    {
+      "kind": "model",
+      "relative_path": "course-demo.resources/model-1/model.obj"
+    },
+    {
+      "kind": "material_library",
+      "relative_path": "course-demo.resources/model-2/material-0.mtl"
+    },
+    {
+      "kind": "model",
+      "relative_path": "course-demo.resources/model-2/model.obj"
+    },
+    {
+      "kind": "texture",
+      "relative_path": "course-demo.resources/model-3/texture-1.png"
+    },
+    {
+      "kind": "material_library",
+      "relative_path": "course-demo.resources/model-3/material-0.mtl"
+    },
+    {
+      "kind": "model",
+      "relative_path": "course-demo.resources/model-3/model.obj"
     }
   ],
   "schema_version": 1,

@@ -4,6 +4,7 @@
 #include "agent/PlanExecutor.hpp"
 #include "agent/SceneStateQuery.hpp"
 #include "assets/ObjImporter.hpp"
+#include "assets/PrefabCatalog.hpp"
 #include "persistence/SceneFileService.hpp"
 #include "persistence/SceneSerializer.hpp"
 #include <nlohmann/json.hpp>
@@ -152,15 +153,43 @@ void run() {
             "conversation was persisted with scene");
     require(!DeepSeekProvider({}).plan("Add a cube", context, compactSceneState(scene, camera)).status.ok,
             "unconfigured provider did not fail cleanly");
+    Scene prefabScene;
+    const auto pine = addPrefab(prefabScene, "snow_pine", {1, 0, 2}, "test-pine");
+    const auto lamp = addPrefab(prefabScene, "street_lamp", {2, 0, 1}, "test-lamp");
+    const auto cabin = addPrefab(prefabScene, "snow_cabin", {-2, 0, -2}, "test-cabin");
+    require(pine.ok && lamp.ok && cabin.ok && prefabScene.objects.size() == 3 &&
+            prefabScene.lights.size() == 1 && lamp.lightId == "test-lamp-light",
+            "built-in prefabs were not added correctly");
+    require(!addPrefab(prefabScene, "street_lamp", {0, 0, 0}, "test-lamp").ok &&
+            prefabScene.objects.size() == 3 && prefabScene.lights.size() == 1,
+            "duplicate prefab ID partially changed the scene");
+    const auto importedLamp = importObj(prefabScene.find("test-lamp")->geometryPath);
+    require(importedLamp.valid() && std::any_of(importedLamp.submeshes.begin(),
+            importedLamp.submeshes.end(), [](const ImportedSubmesh& part) {
+                return part.material.emissionStrength > 0;
+            }), "street-lamp OBJ does not contain an emissive glass material");
+    const auto prefabOperation = dispatchSceneOperation({"pine", "add_prefab",
+        {{"asset_id", "snow_pine"}, {"id", "agent-pine"}, {"position", {-2, 0, 1}}}},
+        prefabScene, camera);
+    require(prefabOperation.ok && prefabScene.find("agent-pine"),
+            "Agent could not create a catalog prefab");
     const auto fixture = std::filesystem::path(SCENE_EDITOR_ASSET_DIR) /
                          "examples" / "course-demo";
     Scene demo;
     Camera demoCamera;
     require(loadSceneFile(fixture / "course-demo.json", demo, demoCamera).ok &&
-            demo.objects.size() == 10 && demo.lights.size() == 2,
+            demo.objects.size() == 7 && demo.lights.size() == 2,
             "portable course demo did not load");
-    require(demo.find("lamp-head") && demo.find("lamp-head")->material.emissionStrength > 0,
-            "course demo lamp bulb is not emissive");
+    require(demo.find("warm-lamp") && demo.find("warm-lamp")->kind == ObjectKind::ImportedModel,
+            "course demo does not use the detailed lamp OBJ");
+    require(demo.find("snow-cabin") && demo.find("snow-cabin")->kind == ObjectKind::ImportedModel &&
+            demo.find("snow-ground") &&
+            std::filesystem::is_regular_file(demo.find("snow-ground")->material.texturePath),
+            "course demo cabin or snow-ground texture is missing");
+    require(demo.find("tree-1") && demo.find("tree-2") && demo.find("tree-3") &&
+            demo.find("tree-1")->geometryPath == demo.find("tree-2")->geometryPath &&
+            demo.find("tree-2")->geometryPath == demo.find("tree-3")->geometryPath,
+            "identical tree OBJ assets were not shared in the saved scene");
     const auto* crate = demo.find("textured-crate");
     require(crate && crate->kind == ObjectKind::ImportedModel &&
             crate->material.texturePath.empty(),
@@ -188,8 +217,8 @@ void run() {
         sourceScene, sourceCamera).ok && sourceScene.find("source-crate")->transform.scale.x == 1.5F,
         "imported OBJ scale did not update");
     require(dispatchSceneOperation({"relight", "update_light",
-        {{"light_id", "warm-lamp"}, {"color", {0.9, 0.5, 0.2}}, {"intensity", 1.8}}},
-        demo, demoCamera).ok && demo.lights.at(1).intensity == 1.8F,
+        {{"light_id", "warm-lamp-light"}, {"color", {0.9, 0.5, 0.2}}, {"intensity", 1.8}}},
+        demo, demoCamera).ok && demo.lights.at(0).intensity == 1.8F,
         "demo point light edit failed");
     if (liveRequested("DEEPSEEK_LIVE_TEST")) {
         const auto config = ProviderConfig::fromEnvironment();
@@ -201,8 +230,8 @@ void run() {
         const auto beforeObjects = liveScene.objects.size();
         const auto beforeLights = liveScene.lights.size();
         const auto live = DeepSeekProvider(config).plan(
-            scenario ? "Create a snowy night scene with three trees and a warm point-light street lamp; "
-                       "face the camera toward the lamp. Approximate trees and lamp from primitives."
+            scenario ? "Create a snowy night scene with three snow_pine prefabs and one street_lamp prefab; "
+                       "face the camera toward the lamp. Use the built-in asset IDs."
                      : "Plan adding one blue cube at [2, 1, 0] and rendering the scene.",
             context, compactSceneState(liveScene, liveCamera));
         if (!live.status.ok) throw std::runtime_error(live.status.message);
@@ -217,14 +246,16 @@ void run() {
                       << ", new lights: " << liveScene.lights.size() - beforeLights << '\n';
             const bool lightOperation = std::any_of(executor.results().begin(), executor.results().end(),
                 [](const PlanStepResult& step) {
-                    return step.operation.tool == "add_light" || step.operation.tool == "update_light";
+                    return step.operation.tool == "add_light" || step.operation.tool == "update_light" ||
+                           (step.operation.tool == "add_prefab" &&
+                            step.operation.arguments.value("asset_id", "") == "street_lamp");
                 });
             const bool warmPointLight = std::any_of(liveScene.lights.begin(), liveScene.lights.end(),
                 [](const Light& light) {
                     return light.type == LightType::Point && light.enabled &&
                            light.intensity > 0 && light.color.r > light.color.b;
                 });
-            require(liveScene.objects.size() >= beforeObjects + 6 &&
+            require(liveScene.objects.size() >= beforeObjects + 4 &&
                     lightOperation && warmPointLight,
                     "Snowy-night plan omitted the three trees or street lamp light");
             const std::string targetId = liveScene.objects.at(beforeObjects).id;

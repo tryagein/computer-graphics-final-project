@@ -158,3 +158,7 @@ As a user, I describe a scene or a targeted change in natural language and let t
 - Evaluation covers one local user and one active session; concurrent editing, authentication, and cloud synchronization are out of scope.
 - One or two optional extensions may be selected only after the base scope is functional and demonstrated.
 - Performance measurements use a target machine and representative scene size documented during planning.
+
+## Phase 7 extension after baseline acceptance
+
+The graphics-focused extension adds three bundled, multi-material OBJ prefabs (`snow_pine`, `street_lamp`, `snow_cabin`) and a snow texture. The toolbar and Agent `add_prefab` tool use fixed asset IDs; the street lamp also creates a warm point light. The renderer reads MTL emissive color and adds one directional-light depth-map pass with adjustable bias and PCF radius. Saved scenes package prefab OBJ/MTL/PNG dependencies through the existing portable resource system. Implementation limits and evidence are in `docs/phase7-graphics.md` and `docs/phase7-acceptance.md`.

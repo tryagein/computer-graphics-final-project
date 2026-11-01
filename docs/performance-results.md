@@ -21,3 +21,19 @@ Reproduce after building `scene_editor`:
 ```
 
 The benchmark exits with code 0 if its median is at least 30 FPS, code 2 if it is below the target. Actual results depend on GPU, driver, resolution, active power profile, and other workloads.
+
+## Phase 7 shadow and prefab check (2026-11-01)
+
+The benchmark now performs a fixed 1280×720 offscreen render each frame, in addition to the editor frame, so an unexpectedly tiny desktop viewport cannot make the workload trivial. Directional shadows were enabled with the default PCF radius 1. The same NVIDIA RTX 3050 Laptop GPU and OpenGL 3.3 driver were used.
+
+| Workload | Duration | Samples after warmup | Median FPS | Result |
+| --- | ---: | ---: | ---: | --- |
+| 100 primitive objects, shadow pass | 60.0068 s | 8,433 | 143.995 | Pass ≥30 FPS |
+| 70 primitives + 20 snow-pine OBJ + 10 snow-cabin OBJ, shadow pass | 30.0067 s | 4,143 | 144.003 | Pass ≥30 FPS |
+
+The second workload exercises imported mesh caching and multiple OBJ submeshes in both the depth and color passes. Both rates are near the active display's VSync limit, so these measurements do not establish uncapped GPU throughput. The original Phase 6 result above used the UI viewport of 628×580 and remains historical evidence for the earlier build.
+
+```powershell
+& '.\build-vs\Debug\scene_editor.exe' --benchmark 60
+& '.\build-vs\Debug\scene_editor.exe' --benchmark-prefabs 30
+```

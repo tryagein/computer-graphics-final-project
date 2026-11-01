@@ -5,6 +5,7 @@
 #include "ui/CameraControls.hpp"
 #include "ui/SceneFilePanel.hpp"
 #include "assets/AssetService.hpp"
+#include "assets/PrefabCatalog.hpp"
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
@@ -110,11 +111,25 @@ void EditorApp::draw(Scene& scene, Renderer& renderer, Camera& camera, GLFWwindo
     ImGui::SameLine();
     if (ImGui::Button("导入 OBJ", {110, 34})) ImGui::OpenPopup("导入 OBJ 模型");
     ImGui::SameLine();
-    if (ImGui::Button("示例模型", {120, 34})) {
-        std::string error;
-        if (addImportedObj(scene, std::string(SCENE_EDITOR_ASSET_DIR) + "/examples/pyramid.obj", error))
-            notifications_.set("已添加并选中示例模型。");
-        else notifications_.report(Result::failure(error));
+    if (ImGui::Button("预设模型", {110, 34})) ImGui::OpenPopup("预设模型菜单");
+    if (ImGui::BeginPopup("预设模型菜单")) {
+        auto add = [&](const char* assetId) {
+            const bool pine = std::string(assetId) == "snow_pine";
+            const bool cabin = std::string(assetId) == "snow_cabin";
+            const int count = int(std::count_if(scene.objects.begin(), scene.objects.end(),
+                [&](const SceneObject& object) {
+                    return object.name == (pine ? "Snow pine" : cabin ? "Snow cabin" : "Street lamp");
+                }));
+            const glm::vec3 position{-2.0F + 2.4F * float(count % 4), 0,
+                                     (pine ? -1.0F : cabin ? -3.0F : 1.5F) + 2.4F * float(count / 4)};
+            const auto result = addPrefab(scene, assetId, position);
+            if (result.ok) notifications_.set("已添加预设模型，可在左侧选择。");
+            else notifications_.report(Result::failure(result.message));
+        };
+        if (ImGui::MenuItem("积雪松树")) add("snow_pine");
+        if (ImGui::MenuItem("暖光路灯")) add("street_lamp");
+        if (ImGui::MenuItem("雪地木屋")) add("snow_cabin");
+        ImGui::EndPopup();
     }
     ImGui::SameLine();
     if (ImGui::Button("重置相机", {110, 34})) {
@@ -137,7 +152,7 @@ void EditorApp::draw(Scene& scene, Renderer& renderer, Camera& camera, GLFWwindo
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("灯光")) {
-            drawLightPanel(scene);
+            drawLightPanel(scene, renderer);
             ImGui::EndTabItem();
         }
         if (ImGui::BeginTabItem("Agent")) {

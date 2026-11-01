@@ -32,19 +32,17 @@ Remove-Item Env:DEEPSEEK_LIVE_TEST
 
 ```json
 {
-  "summary": "增加一棵简化的树并用暖光照亮",
+  "summary": "增加一棵积雪松树和一盏暖光路灯",
   "operations": [
-    {"operation_id": "trunk", "tool": "add_object", "arguments": {"type": "cube", "id": "tree-trunk", "name": "树干", "position": [0, 1, 0], "scale": [0.3, 2, 0.3]}},
-    {"operation_id": "crown", "tool": "add_object", "arguments": {"type": "sphere", "id": "tree-crown", "name": "树冠", "position": [0, 2.3, 0], "scale": [1, 1, 1]}},
-    {"operation_id": "green", "tool": "set_material", "arguments": {"object_id": "tree-crown", "color": [0.15, 0.55, 0.2], "roughness": 0.8}},
-    {"operation_id": "lamp", "tool": "add_light", "arguments": {"type": "point", "id": "agent-warm-light", "position": [2, 3, 1], "color": [1, 0.72, 0.42], "intensity": 2}},
+    {"operation_id": "tree", "tool": "add_prefab", "arguments": {"asset_id": "snow_pine", "id": "tree-1", "position": [0, 0, 0]}},
+    {"operation_id": "lamp", "tool": "add_prefab", "arguments": {"asset_id": "street_lamp", "id": "lamp-1", "position": [2, 0, 1]}},
     {"operation_id": "look", "tool": "move_camera", "arguments": {"position": [4, 3, 6], "target": [0, 1.5, 0]}},
     {"operation_id": "render", "tool": "render_scene", "arguments": {}}
   ]
 }
 ```
 
-验收时确认视口出现树干和树冠，右侧灯光页新增暖色点光源，相机朝向树。再输入 `{"summary":"检查场景","operations":[{"operation_id":"state","tool":"get_scene_state","arguments":{}}]}`，展开操作进度中的 `state` 查看当前对象、灯光和相机数据。
+验收时确认视口出现多层积雪松树和完整路灯，右侧灯光页新增暖色点光源，相机朝向场景。再输入 `{"summary":"检查场景","operations":[{"operation_id":"state","tool":"get_scene_state","arguments":{}}]}`，展开操作进度中的 `state` 查看当前对象、灯光和相机数据。
 
 ## 可用操作
 
@@ -53,6 +51,7 @@ Remove-Item Env:DEEPSEEK_LIVE_TEST
 | 工具 | 主要参数 |
 | --- | --- |
 | `add_object` | `type` 为 `cube`、`sphere`、`plane` 或 `imported_model`；可设置 `id`、`name`、`position`、`rotation`、`scale`，导入 OBJ 时另需本地 `path` |
+| `add_prefab` | `asset_id` 为 `snow_pine`、`street_lamp` 或 `snow_cabin`；可设置 `id`、`position`。路灯同时创建灯光，ID 为 `<id>-light`。 |
 | `update_object`、`delete_object` | `object_id`；更新时可设置名称、变换和可见性 |
 | `set_material` | `object_id`；可设置 `color`、`roughness`、`shininess`、`emission`、`emission_strength`、其他光照颜色或本地 `texture_path` |
 | `add_light`、`update_light`、`delete_light` | 点光源或平行光；更新和删除使用 `light_id` |
@@ -64,4 +63,4 @@ Remove-Item Env:DEEPSEEK_LIVE_TEST
 
 计划最多 32 步，逐帧执行。对象目标可以是稳定 ID 或唯一名称。若对象或灯光不存在，执行器会停止后续操作，自动查询场景状态并在进度中显示；更正描述后可重试。无效参数会返回错误，当前操作不会部分修改对象。点光源最多 4 个、平行光最多 2 个；超限会显示错误。网络错误、服务拒绝和无效模型响应会显示在 Agent 页，不影响直接编辑。
 
-路灯要同时创建灯泡物体和同位置的点光源：灯泡材质可设 `"emission":[1,0.72,0.4]`、`"emission_strength":1.5`。自发光让灯泡在暗处可见，点光源照亮周围；透明材质不会产生发光效果。若出现 WinHTTP 12002，界面会指出超时阶段。模型响应最长等待 120 秒；若仍超时，检查网络和 `.env` 中的 `HTTPS_PROXY` 后重试。
+自带的 `street_lamp` 预设已包含自发光玻璃和同位置的点光源。手工搭建路灯时，可给灯泡设置 `"emission":[1,0.72,0.4]`、`"emission_strength":1.5` 并另加点光源；透明材质不会产生发光效果。若出现 WinHTTP 12002，界面会指出超时阶段。模型响应最长等待 120 秒；若仍超时，检查网络和 `.env` 中的 `HTTPS_PROXY` 后重试。

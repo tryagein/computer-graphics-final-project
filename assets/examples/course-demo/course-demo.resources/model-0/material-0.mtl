@@ -1,6 +1,12 @@
-newmtl DemoChecker
-Ka 0.18 0.18 0.18
-Kd 1 1 1
-Ks 0.45 0.45 0.45
-Ns 56
-map_Kd texture-0.png
+newmtl bark
+Ka .10 .06 .03
+Kd .28 .16 .08
+Ks .05 .05 .05
+newmtl needles
+Ka .04 .07 .06
+Kd .08 .25 .19
+Ks .08 .12 .10
+newmtl snow
+Ka .15 .17 .19
+Kd .75 .84 .91
+Ks .18 .20 .22

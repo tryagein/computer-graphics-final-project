@@ -1,5 +1,6 @@
 #include "app/Application.hpp"
 #include "persistence/SceneFileService.hpp"
+#include "assets/PrefabCatalog.hpp"
 #ifdef _WIN32
 #include <Windows.h>
 #endif
@@ -43,16 +44,25 @@ void centerWindow(GLFWwindow* window, int width, int height) {
 }
 
 int benchmark(Scene& scene, Camera& camera, Renderer& renderer, EditorApp& editor,
-              GLFWwindow* window, int seconds) {
+              GLFWwindow* window, int seconds, bool withPrefabs) {
     scene.objects.clear();
     scene.selectedId.clear();
     for (int row = 0; row < 10; ++row) {
         for (int column = 0; column < 10; ++column) {
+            const int index = row * 10 + column;
+            const glm::vec3 position{(column - 4.5F) * (withPrefabs ? 3.2F : 2.1F),
+                                      0, (row - 4.5F) * (withPrefabs ? 3.2F : 2.1F)};
+            if (withPrefabs && (index % 10 == 0 || index % 4 == 0)) {
+                const auto added = addPrefab(scene, index % 10 == 0 ? "snow_cabin" : "snow_pine",
+                    position, "benchmark-" + std::to_string(index));
+                if (!added.ok) { std::cerr << added.message << '\n'; return 1; }
+                continue;
+            }
             SceneObject object;
-            object.id = "benchmark-" + std::to_string(row * 10 + column);
+            object.id = "benchmark-" + std::to_string(index);
             object.name = object.id;
             object.kind = (row + column) % 2 == 0 ? ObjectKind::Cube : ObjectKind::Sphere;
-            object.transform.position = {(column - 4.5F) * 2.1F, 0.7F, (row - 4.5F) * 2.1F};
+            object.transform.position = position + glm::vec3{0, 0.7F, 0};
             object.transform.scale = {0.8F, 0.8F, 0.8F};
             object.material.color = {0.2F + 0.06F * column, 0.3F + 0.04F * row, 0.65F};
             if (!scene.add(std::move(object))) return 1;
@@ -78,6 +88,9 @@ int benchmark(Scene& scene, Camera& camera, Renderer& renderer, EditorApp& edito
         glfwPollEvents();
         const float dt = float(std::chrono::duration<double>(frameStart - previous).count());
         editor.draw(scene, renderer, camera, window, dt);
+        // Keep the workload meaningful when a headless/remote desktop shrinks the UI viewport.
+        renderer.resize(1280, 720);
+        renderer.draw(scene, camera);
         glFinish();
         glfwSwapBuffers(window);
         const auto frameEnd = std::chrono::steady_clock::now();
@@ -92,9 +105,10 @@ int benchmark(Scene& scene, Camera& camera, Renderer& renderer, EditorApp& edito
               << "GPU renderer: " << (gpu ? gpu : "unknown") << '\n'
               << "OpenGL version: " << (version ? version : "unknown") << '\n'
               << "Window resolution: 1280x720\n"
-              << "Viewport resolution: " << renderer.viewportWidth() << 'x'
+              << "Offscreen benchmark resolution: " << renderer.viewportWidth() << 'x'
               << renderer.viewportHeight() << '\n'
               << "Objects: " << scene.objects.size() << '\n'
+              << "Built-in OBJ prefabs: " << (withPrefabs ? 30 : 0) << '\n'
               << "Duration seconds: " << elapsed << '\n'
               << "Measured frames after warmup: " << frameRates.size() << '\n'
               << "Median FPS: " << *middle << '\n';
@@ -139,7 +153,8 @@ int captureDemo(Scene& scene, Camera& camera, Renderer& renderer, const std::str
 }
 }
 
-int Application::run(int benchmarkSeconds, const std::string& capturePath) {
+int Application::run(int benchmarkSeconds, const std::string& capturePath,
+                     bool captureWithoutShadows, bool benchmarkPrefabs) {
     if (!glfwInit()) return startupError(1, "GLFW initialization failed. Check the graphics driver.");
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -167,6 +182,7 @@ int Application::run(int benchmarkSeconds, const std::string& capturePath) {
         return startupError(4, "Shader initialization failed. Check the project assets directory.");
     }
     if (!capturePath.empty()) {
+        if (captureWithoutShadows) renderer_.setShadowsEnabled(false);
         const int result = captureDemo(scene_, camera_, renderer_, capturePath);
         renderer_.shutdown();
         glfwDestroyWindow(window_);
@@ -181,7 +197,8 @@ int Application::run(int benchmarkSeconds, const std::string& capturePath) {
     }
     centerWindow(window_, 1280, 720);
     if (benchmarkSeconds) {
-        const int result = benchmark(scene_, camera_, renderer_, editor_, window_, benchmarkSeconds);
+        const int result = benchmark(scene_, camera_, renderer_, editor_, window_,
+                                     benchmarkSeconds, benchmarkPrefabs);
         editor_.shutdown();
         renderer_.shutdown();
         glfwDestroyWindow(window_);

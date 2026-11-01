@@ -5,7 +5,7 @@
 #include <string>
 
 namespace scene_editor {
-void drawLightPanel(Scene& scene) {
+void drawLightPanel(Scene& scene, Renderer& renderer) {
     static unsigned nextId = 1;
     const auto pointCount = std::count_if(scene.lights.begin(), scene.lights.end(),
         [](const Light& light) { return light.type == LightType::Point; });
@@ -32,6 +32,16 @@ void drawLightPanel(Scene& scene) {
     }
     ImGui::EndDisabled();
     ImGui::TextDisabled("最多显示 4 个点光源和 2 个平行光。");
+    ImGui::SeparatorText("平行光阴影");
+    bool shadows = renderer.shadowsEnabled();
+    if (ImGui::Checkbox("启用阴影", &shadows)) renderer.setShadowsEnabled(shadows);
+    float bias = renderer.shadowBias();
+    if (ImGui::SliderFloat("深度偏移", &bias, 0.0005F, 0.02F, "%.4f"))
+        renderer.setShadowBias(bias);
+    int radius = renderer.shadowPcfRadius();
+    if (ImGui::SliderInt("PCF 半径", &radius, 0, 2)) renderer.setShadowPcfRadius(radius);
+    ImGui::TextDisabled("第一盏启用的平行光投射阴影；半径 0/1/2 对应 1/9/25 次采样。");
+    if (!renderer.shadowAvailable()) ImGui::TextDisabled("当前显卡未能创建阴影缓冲区。");
     ImGui::SeparatorText("场景灯光");
     for (size_t index = 0; index < scene.lights.size(); ++index) {
         auto& light = scene.lights[index];
